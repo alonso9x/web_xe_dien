@@ -1,0 +1,23 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite" // Dùng tạm SQLite cho nhẹ và nhanh ở môi trường dev
+  url      = env("DATABASE_URL")
+}
+
+model Motorbike {
+  id          String   @id @default(cuid())
+  name        String   // Tên xe (VD: POWELLDD Dimoon)
+  slug        String   @unique // Đường dẫn thân thiện SEO (VD: powelldd-dimoon)
+  price       Int      // Giá bán
+  range       Int      // Quãng đường/lần sạc (km)
+  topSpeed    Int      // Tốc độ tối đa (km/h)
+  battery     String   // Loại pin/ắc quy (VD: 72V-20Ah)
+  style       String   // Phong cách (VD: Neo-Retro, Modern Minimalist)
+  images      String   // Lưu mảng tên file ảnh dưới dạng chuỗi JSON
+  description String   // Mô tả chi tiết
+  isAvailable Boolean  @default(true) // Trạng thái còn hàng
+  createdAt   DateTime @default(now())
+}
