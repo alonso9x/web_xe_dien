@@ -119,11 +119,12 @@ export default function Home() {
             <span className="text-[10px] font-medium tracking-widest text-neutral-500 uppercase mt-1">E-Scooter</span>
           </motion.div>
           
+          {/* ĐÃ CẬP NHẬT ĐIỀU HƯỚNG BẰNG THẺ LINK CHUẨN */}
           <nav className="hidden lg:flex gap-10 text-[13px] font-semibold uppercase tracking-widest text-neutral-600">
-            <a href="#" className="hover:text-black transition-colors">Trang chủ</a>
-            <a href="#san-pham" className="hover:text-black transition-colors">Sản phẩm</a>
-            <a href="#cong-nghe" className="hover:text-black transition-colors">Công nghệ</a>
-            <a href="#tin-tuc" className="hover:text-black transition-colors">Tin tức</a>
+            <Link href="/" className="hover:text-black transition-colors">Trang chủ</Link>
+            <Link href="/#san-pham" className="hover:text-black transition-colors">Sản phẩm</Link>
+            <Link href="/#cong-nghe" className="hover:text-black transition-colors">Công nghệ</Link>
+            <Link href="/tin-tuc" className="hover:text-black transition-colors">Tin tức</Link>
           </nav>
 
           <motion.button onClick={() => setIsModalOpen(true)} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="hidden md:flex items-center gap-2 bg-black text-white px-7 py-3 rounded-full text-sm font-semibold shadow-xl shadow-black/20">
@@ -395,7 +396,7 @@ export default function Home() {
           <div className="lg:col-span-5">
             <h2 className="text-4xl font-semibold mb-4 uppercase tracking-widest leading-none">Minh Anh</h2>
             <span className="text-sm text-neutral-500 tracking-[0.4em] uppercase block mb-6">E-Scooter</span>
-            <p className="text-neutral-400 text-sm leading-relaxed font-light max-w-sm mb-8">Nâng tầm phong cách di chuyển đô thị. Hệ thống phân phối các dòng xe điện Poweldd, TMT, Vinfast....chính hãng hàng đầu Việt Nam.</p>
+            <p className="text-neutral-400 text-sm leading-relaxed font-light max-w-sm mb-8">Nâng tầm phong cách di chuyển đô thị. Hệ thống phân phối các dòng xe điện Powelldd, TMT, Vinfast....chính hãng hàng đầu Việt Nam.</p>
             <div className="flex gap-4">
               <a href="https://www.facebook.com/profile.php?id=61585209534176" target="_blank" rel="noreferrer" className="bg-neutral-800 p-3 rounded-full hover:bg-blue-600 hover:text-white transition-all shadow-sm">
                 <FacebookIcon size={20} />
