@@ -74,6 +74,22 @@ const featureImages = [
 export default function DimoonDetail() {
   const [activeColor, setActiveColor] = useState(dimoonData.colors[0]);
 
+  // HÀM XỬ LÝ VUỐT (SLIDE) ĐỔI MÀU (Thêm mới cho Dimoon)
+  const handleDragEnd = (event: any, info: any) => {
+    const swipeThreshold = 50; // Khoảng cách vuốt tối thiểu
+    const currentIndex = dimoonData.colors.findIndex(c => c.name === activeColor.name);
+
+    if (info.offset.x < -swipeThreshold) {
+      // Vuốt sang trái -> Sang ảnh tiếp theo
+      const nextIndex = (currentIndex + 1) % dimoonData.colors.length;
+      setActiveColor(dimoonData.colors[nextIndex]);
+    } else if (info.offset.x > swipeThreshold) {
+      // Vuốt sang phải -> Về ảnh trước đó
+      const prevIndex = (currentIndex - 1 + dimoonData.colors.length) % dimoonData.colors.length;
+      setActiveColor(dimoonData.colors[prevIndex]);
+    }
+  };
+
   return (
     // Nền tổng thể: Trắng kem (Cream) ngả vàng Cinematic
     <main className={`min-h-screen bg-[#FDFBF7] text-amber-950 ${elegantFont.className} font-light selection:bg-amber-200 selection:text-amber-900`}>
@@ -114,7 +130,11 @@ export default function DimoonDetail() {
                 transition={{ duration: 0.4, ease: "easeOut" }}
                 src={activeColor.img} 
                 alt={`Xe điện Dimoon màu ${activeColor.name}`} 
-                className="w-full h-full object-contain drop-shadow-2xl z-10"
+                className="w-full h-full object-contain drop-shadow-2xl z-10 cursor-grab active:cursor-grabbing" // Cập nhật class vuốt
+                drag="x" // Bật tính năng kéo vuốt dọc theo trục X
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.2}
+                onDragEnd={handleDragEnd} // Kích hoạt đổi màu
               />
             </AnimatePresence>
             <div className="absolute bottom-10 left-0 right-0 text-center pointer-events-none">
@@ -122,6 +142,28 @@ export default function DimoonDetail() {
                 DIMOON
               </span>
             </div>
+          </div>
+
+          {/* BẢNG CHỌN MÀU - CHỈ HIỂN THỊ TRÊN MOBILE (Thêm mới cho Dimoon) */}
+          <div className="mt-8 lg:hidden flex flex-col items-center justify-center">
+            <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-900 mb-4">
+              Màu sắc: <span className="text-amber-700">{activeColor.name}</span>
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              {dimoonData.colors.map((color) => (
+                <button 
+                  key={`mobile-${color.name}`}
+                  onClick={() => setActiveColor(color)}
+                  className={`relative w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-md ${activeColor.name === color.name ? "ring-2 ring-offset-4 ring-offset-[#FDFBF7] ring-amber-700 scale-110" : "ring-1 ring-amber-200 hover:ring-amber-400 hover:scale-110"}`}
+                  style={{ backgroundColor: color.hex }}
+                  title={color.name}
+                >
+                  {activeColor.name === color.name && color.hex === "#F4F4F4" && <Check size={20} className="text-amber-950" />}
+                  {activeColor.name === color.name && color.hex !== "#F4F4F4" && <Check size={20} className="text-[#FDFBF7]" />}
+                </button>
+              ))}
+            </div>
+            <p className="text-[10px] text-amber-700/60 mt-4 italic font-medium">← Vuốt ảnh để xem màu khác →</p>
           </div>
         </div>
 
@@ -138,7 +180,8 @@ export default function DimoonDetail() {
               {dimoonData.description}
             </p>
 
-            <div className="mb-12">
+            {/* BẢNG CHỌN MÀU - CHỈ HIỂN THỊ TRÊN DESKTOP (Cập nhật class lg:block) */}
+            <div className="mb-12 hidden lg:block">
               <div className="flex items-center justify-between mb-4">
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-900">Màu sắc</p>
                 <p className="text-xs font-bold text-amber-700">{activeColor.name}</p>
@@ -146,7 +189,7 @@ export default function DimoonDetail() {
               <div className="flex gap-4">
                 {dimoonData.colors.map((color) => (
                   <button 
-                    key={color.name}
+                    key={`desktop-${color.name}`}
                     onClick={() => setActiveColor(color)}
                     className={`relative w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-md ${activeColor.name === color.name ? "ring-2 ring-offset-4 ring-offset-[#FDFBF7] ring-amber-700 scale-110" : "ring-1 ring-amber-200 hover:ring-amber-400 hover:scale-110"}`}
                     style={{ backgroundColor: color.hex }}
@@ -224,7 +267,7 @@ export default function DimoonDetail() {
         </div>
       </section>
 
-{/* SHOWROOM & GOOGLE MAPS */}
+      {/* SHOWROOM & GOOGLE MAPS */}
       <section id="showroom" className="py-24 bg-[#F4F4F6] border-t border-neutral-200">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
