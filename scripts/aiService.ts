@@ -4,7 +4,6 @@ dotenv.config();
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
-// Định nghĩa cấu trúc trả về để giải quyết triệt để lỗi TypeScript
 export interface ArticleResult {
   newTitle: string;
   excerpt: string;
@@ -12,9 +11,9 @@ export interface ArticleResult {
 }
 
 export async function rewriteArticle(rawContent: string, originalTitle: string): Promise<ArticleResult | null> {
-  // Cập nhật lên model gemini-2.5-flash và ép trả về chuẩn JSON
+  // Sửa chính xác tên model về gemini-2.5-flash để chạy đúng cổng API hiện tại
   const model = genAI.getGenerativeModel({ 
-    model: "gemini-3.5-flash",
+    model: "gemini-2.5-flash", 
     generationConfig: { responseMimeType: "application/json" }
   });
 
@@ -26,10 +25,12 @@ export async function rewriteArticle(rawContent: string, originalTitle: string):
     1. Giọng văn: Tích cực, trung lập, không thiên vị, không quảng cáo quá mức, tránh dùng từ "nhất"
     2. Chèn tự nhiên các cụm từ chuẩn SEO: "xe điện", "xe máy điện thông minh", "xe điện hottrend", "Powelldd", "xe đạp điện", "xe điện Hà Nội"
     3. Đưa góc nhìn đánh giá chuyên môn của Xe Điện Minh Anh vào bài viết. Không copy nguyên văn.
-    4. BẮT BUỘC TRẢ VỀ CHUẨN JSON bao gồm 3 trường (keys) sau:
-       - "newTitle": Tiêu đề mới giật tít
-       - "excerpt": Mô tả ngắn
-       - "content": Nội dung chi tiết có chia đoạn
+    4. BẮT BUỘC TRẢ VỀ ĐÚNG CẤU TRÚC JSON SAU (Không thêm bất kỳ văn bản nào khác ngoài JSON):
+    {
+      "newTitle": "Tiêu đề mới giật tít",
+      "excerpt": "Mô tả ngắn gọn khoảng 2-3 câu",
+      "content": "Nội dung chi tiết viết liền, có chia đoạn bằng các ký tự xuống dòng (\\n\\n)"
+    }
 
     --- BÀI GỐC ---
     Tiêu đề: ${originalTitle}
@@ -38,11 +39,10 @@ export async function rewriteArticle(rawContent: string, originalTitle: string):
 
   try {
     const result = await model.generateContent(prompt);
-    // Nhờ có responseMimeType, text trả về chắc chắn là JSON thuần
     const responseText = result.response.text();
     return JSON.parse(responseText) as ArticleResult;
-  } catch (error) {
-    console.error("Lỗi khi AI xử lý:", error);
+  } catch (error: any) {
+    console.error("❌ LỖI TẠI AI SERVICE:", error?.message || error);
     return null;
   }
 }
