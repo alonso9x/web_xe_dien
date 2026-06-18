@@ -6,7 +6,7 @@ import { getLatestNewsLinks, fetchNewsContent } from './scraper';
 import { rewriteArticle } from './aiService';
 
 // HÀM 1: Tải ảnh từ báo về website của anh
-async function downloadImage(url: string, filename: string) {
+async function downloadImage(url: string, filename: string): Promise<boolean> {
   const imgDir = path.join(process.cwd(), 'public', 'images', 'news');
   if (!fs.existsSync(imgDir)) fs.mkdirSync(imgDir, { recursive: true });
 
@@ -16,8 +16,8 @@ async function downloadImage(url: string, filename: string) {
   const response = await axios({ url, method: 'GET', responseType: 'stream' });
   response.data.pipe(writer);
 
- return new Promise((resolve, reject) => {
-    writer.on('finish', () => resolve(true)); // Thêm () => resolve(true) vào đây
+  return new Promise((resolve, reject) => {
+    writer.on('finish', () => resolve(true));
     writer.on('error', reject);
   });
 }
@@ -41,18 +41,29 @@ function saveToDatabase(article: any) {
 async function runAutoNews() {
   console.log(`\n[${new Date().toLocaleString('vi-VN')}] 🚀 KHỞI ĐỘNG BOT CÀO TIN...`);
   
-  const news = await getLatestNewsLinks("xe máy điện");
-  if (!news || !news.link) return console.log("❌ Không tìm thấy bài báo mới.");
+  // 1. Lấy danh sách 5 bài báo mới nhất
+  const newsList = await getLatestNewsLinks("xe máy điện");
+  if (!newsList || newsList.length === 0) {
+    return console.log("❌ Không tìm thấy bài báo mới.");
+  }
 
-  const scrapedData = await fetchNewsContent(news.link);
+  // 2. Bốc bài đầu tiên (vị trí số 0) ra để chạy
+  const firstNews = newsList[0];
+  if (!firstNews || !firstNews.link) {
+    return console.log("❌ Bài báo đầu tiên bị lỗi link hoặc trống.");
+  }
+
+  // 3. Truyền đúng link của bài đầu tiên vào hàm cào tin
+  const scrapedData = await fetchNewsContent(firstNews.link);
   if (!scrapedData) return console.log("❌ Không bóc được nội dung.");
   
-  // Bỏ qua nếu có video
+  // Bỏ qua nếu có video hoặc bài quá ngắn
   if (scrapedData.error) return console.log(`⏭️ ${scrapedData.error}`);
   if (!scrapedData.content || scrapedData.content.length < 200) return console.log("❌ Nội dung rác/quá ngắn.");
 
   console.log(`🧠 Đang nhờ Gemini xào nấu...`);
-  const aiResult = await rewriteArticle(scrapedData.content, news.title || "");
+  // Truyền đúng tiêu đề của bài đầu tiên vào AI
+  const aiResult = await rewriteArticle(scrapedData.content, firstNews.title || "");
 
   if (aiResult) {
     let localImagePath = "https://images.unsplash.com/photo-1593941707882-a5bba14938c7?q=80&w=800&auto=format&fit=crop"; 
@@ -63,7 +74,7 @@ async function runAutoNews() {
         const imageName = `news-${Date.now()}.jpg`;
         console.log(`📸 Đang tải ảnh gốc về máy: ${scrapedData.imageUrl}`);
         await downloadImage(scrapedData.imageUrl, imageName);
-        localImagePath = `/images/news/${imageName}`; // Đường dẫn để lên web Next.js
+        localImagePath = `/images/news/${imageName}`; // Đường dẫn chuẩn trên web
       } catch (e) {
         console.log("⚠️ Lỗi tải ảnh, dùng ảnh mặc định.");
       }
@@ -71,11 +82,11 @@ async function runAutoNews() {
 
     const contentString = Array.isArray(aiResult.content) ? aiResult.content.join('\n\n') : String(aiResult.content);
 
-    // Đóng gói dữ liệu chuẩn form với Code trang tin tức ban đầu của anh
+    // Đóng gói dữ liệu chuẩn form tin tức
     const finalArticle = {
       id: Date.now(),
       title: aiResult.newTitle,
-      date: new Date().toLocaleDateString('vi-VN'), // Ngày hiện tại
+      date: new Date().toLocaleDateString('vi-VN'), 
       category: "Điểm tin",
       image: localImagePath,
       excerpt: aiResult.excerpt,
