@@ -37,15 +37,15 @@ export async function fetchNewsContent(url: string) {
     });
     
     const page = await browser.newPage();
-    
+    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
     // Giả dạng kích thước màn hình người dùng thật
     await page.setViewport({ width: 1280, height: 720 });
 
     // Truy cập link báo và chờ trang load xong
-    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 40000 });
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
     
     // NGHỈ CHÂN 3 GIÂY: Để lách qua màn hình chờ của Cloudflare và load hết JavaScript
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    await new Promise(resolve => setTimeout(resolve, 30000));
 
     // Rút ruột toàn bộ HTML của trang web sau khi đã load xong
     const html = await page.content();
