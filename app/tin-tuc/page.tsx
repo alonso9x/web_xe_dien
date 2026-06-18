@@ -23,22 +23,39 @@ const elegantFont = Plus_Jakarta_Sans({
   display: "swap"
 });
 
-// Hàm đọc dữ liệu trực tiếp từ file JSON do Bot tạo ra
+// Hàm đọc và chuẩn hóa dữ liệu tinh vi
 async function getNewsData() {
   try {
-    const filePath = path.join(process.cwd(), 'src', 'data', 'newsData.json');
-    if (!fs.existsSync(filePath)) return []; // Nếu bot chưa chạy lần nào thì trả về mảng rỗng
+    // Chốt chặn đường dẫn: Ép tìm đúng thư mục nếu Next.js nhận nhầm root ngoài /var/www
+    let filePath = path.join(process.cwd(), 'public', 'newsData.json');
+    if (!fs.existsSync(filePath)) {
+      filePath = '/var/www/shop-xe-dien/public/newsData.json';
+    }
+    
+    if (!fs.existsSync(filePath)) return [];
     
     const fileContents = fs.readFileSync(filePath, 'utf8');
-    return JSON.parse(fileContents);
+    const data = JSON.parse(fileContents);
+    
+    // Nắn dữ liệu thành mảng (Dù Bot xuất ra 1 Object hay nhiều Object)
+    const rawItems = Array.isArray(data) ? data : [data];
+    
+    // Ép các trường lệch pha (imageUrl, createdAt) về cấu trúc giao diện cần tìm
+    return rawItems.map((item: any, index: number) => ({
+      id: item.id || `bai-viet-${index + 1}`,
+      category: item.category || "Hot Trend",
+      image: item.imageUrl || item.image || "/images/default-news.jpg",
+      date: item.createdAt ? new Date(item.createdAt).toLocaleDateString('vi-VN') : (item.date || "Vừa cập nhật"),
+      title: item.title || "Tin tức xe điện mới nhất",
+      excerpt: item.excerpt || ""
+    }));
   } catch (error) {
-    console.error("Lỗi đọc file tin tức:", error);
+    console.error("Lỗi đồng bộ dữ liệu JSON:", error);
     return [];
   }
 }
 
 export default async function NewsPage() {
-  // Lấy danh sách tin tức theo thời gian thực
   const newsList = await getNewsData();
 
   return (
@@ -82,9 +99,9 @@ export default async function NewsPage() {
 
       {/* 3. GRID TIN TỨC */}
       <section className="py-20 px-6 max-w-7xl mx-auto min-h-[50vh]">
-        {newsList.length === 0 ? (
+        {!Array.isArray(newsList) || newsList.length === 0 ? (
           <div className="text-center text-neutral-500 py-10">
-            Chưa có bài viết nào. 
+            Chưa có bài viết nào. Đang chờ hệ thống AI cập nhật tin tức...
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
@@ -96,7 +113,7 @@ export default async function NewsPage() {
               >
                 <div className="relative w-full aspect-[4/3] rounded-3xl overflow-hidden mb-6">
                   <div className="absolute top-4 left-4 z-20 bg-white/90 backdrop-blur-md text-black px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-sm">
-                    {news.category || "Điểm tin"}
+                    {news.category}
                   </div>
                   <img src={news.image} alt={news.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                 </div>
