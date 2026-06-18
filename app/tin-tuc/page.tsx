@@ -1,11 +1,12 @@
-'use client';
-
-import { motion } from "framer-motion";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
 import { Clock, ArrowRight, MapPin, Phone, ArrowLeft } from "lucide-react";
+import fs from 'fs';
+import path from 'path';
 
-// --- CUSTOM ICONS (Đồng bộ từ trang chủ) ---
+// --- LỆNH TỐI QUAN TRỌNG: Ép Next.js luôn đọc dữ liệu mới nhất, không dùng cache ---
+export const dynamic = 'force-dynamic';
+
 const FacebookIcon = ({ size = 24 }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
 );
@@ -22,18 +23,27 @@ const elegantFont = Plus_Jakarta_Sans({
   display: "swap"
 });
 
-// --- DATA TIN TỨC (Đã cập nhật ảnh lỗi) ---
-const newsList = [
-  { id: 1, title: "Powelldd ra mắt dòng xe Dimoon thế hệ mới", date: "15/06/2026", category: "Sự kiện", image: "https://images.unsplash.com/photo-1558981806-ec527fa84c39?q=80&w=800&auto=format&fit=crop", excerpt: "Khám phá ngay siêu phẩm Dimoon với thiết kế mang hơi thở tương lai, trang bị công nghệ an toàn tối tân và hệ thống đèn LED ma trận đột phá." },
-  { id: 2, title: "Ưu đãi tựu trường: Tặng ngay voucher 2 triệu", date: "10/06/2026", category: "Khuyến mãi", image: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=800&auto=format&fit=crop", excerpt: "Cơ hội sắm xe điện xịn với mức giá cực hời dành riêng cho học sinh, sinh viên. Tặng kèm mũ bảo hiểm chính hãng và gói bảo dưỡng 2 năm." },
-  { id: 3, title: "Hướng dẫn bảo dưỡng pin xe điện đúng cách", date: "05/06/2026", category: "Kinh nghiệm", image: "https://images.unsplash.com/photo-1593941707882-a5bba14938c7?q=80&w=800&auto=format&fit=crop", excerpt: "Để pin xe điện luôn bền bỉ và đạt hiệu suất cao nhất trong mùa mưa, bạn tuyệt đối không nên bỏ qua 5 lưu ý sống còn sau đây." }
-];
+// Hàm đọc dữ liệu trực tiếp từ file JSON do Bot tạo ra
+async function getNewsData() {
+  try {
+    const filePath = path.join(process.cwd(), 'src', 'data', 'newsData.json');
+    if (!fs.existsSync(filePath)) return []; // Nếu bot chưa chạy lần nào thì trả về mảng rỗng
+    
+    const fileContents = fs.readFileSync(filePath, 'utf8');
+    return JSON.parse(fileContents);
+  } catch (error) {
+    console.error("Lỗi đọc file tin tức:", error);
+    return [];
+  }
+}
 
-export default function NewsPage() {
+export default async function NewsPage() {
+  // Lấy danh sách tin tức theo thời gian thực
+  const newsList = await getNewsData();
+
   return (
     <main className={`min-h-screen bg-[#F4F4F6] text-neutral-800 ${elegantFont.className} overflow-x-hidden font-light`}>
-      
-      {/* 1. HEADER (Đồng bộ trang chủ) */}
+      {/* 1. HEADER */}
       <header className="fixed w-full top-0 bg-white/80 backdrop-blur-2xl z-50 border-b border-white shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <Link href="/" className="flex flex-col cursor-pointer hover:opacity-80 transition-opacity">
@@ -65,97 +75,69 @@ export default function NewsPage() {
             Tin tức <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-500 font-light italic">Minh Anh</span>
           </h2>
           <p className="text-neutral-500 max-w-2xl mx-auto leading-relaxed">
-            Cập nhật những xu hướng công nghệ mới nhất, sự kiện ra mắt xe và các chương trình ưu đãi độc quyền từ hệ thống Minh Anh E-Scooter.
+            Cập nhật những xu hướng công nghệ mới nhất, sự kiện ra mắt xe và tin tức nóng hổi từ hệ thống Minh Anh E-Scooter.
           </p>
         </div>
       </section>
 
       {/* 3. GRID TIN TỨC */}
       <section className="py-20 px-6 max-w-7xl mx-auto min-h-[50vh]">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {newsList.map((news, idx) => (
-            <motion.div 
-              key={news.id} 
-              initial={{ opacity: 0, y: 30 }} 
-              animate={{ opacity: 1, y: 0 }} 
-              transition={{ delay: idx * 0.1, duration: 0.5 }}
-              className="group cursor-pointer flex flex-col h-full bg-white rounded-[2rem] p-4 shadow-sm hover:shadow-2xl hover:shadow-neutral-200/50 transition-all border border-neutral-100"
-            >
-              <div className="relative w-full aspect-[4/3] rounded-3xl overflow-hidden mb-6">
-                <div className="absolute top-4 left-4 z-20 bg-white/90 backdrop-blur-md text-black px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-sm">
-                  {news.category}
+        {newsList.length === 0 ? (
+          <div className="text-center text-neutral-500 py-10">
+            Chưa có bài viết nào. Đang chờ hệ thống AI cập nhật tin tức...
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            {newsList.map((news: any) => (
+              <Link 
+                href={`/tin-tuc/${news.id}`} 
+                key={news.id} 
+                className="group cursor-pointer flex flex-col h-full bg-white rounded-[2rem] p-4 shadow-sm hover:shadow-2xl hover:shadow-neutral-200/50 hover:-translate-y-2 transition-all duration-300 border border-neutral-100"
+              >
+                <div className="relative w-full aspect-[4/3] rounded-3xl overflow-hidden mb-6">
+                  <div className="absolute top-4 left-4 z-20 bg-white/90 backdrop-blur-md text-black px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-sm">
+                    {news.category || "Điểm tin"}
+                  </div>
+                  <img src={news.image} alt={news.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                 </div>
-                <img src={news.image} alt={news.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-              </div>
 
-              <div className="flex flex-col flex-1 px-2 pb-2">
-                <span className="text-neutral-400 text-[11px] font-medium tracking-widest mb-3 flex items-center gap-2 uppercase">
-                  <Clock size={12} /> {news.date}
-                </span>
-                <h4 className="text-xl font-semibold mb-3 leading-snug group-hover:text-red-600 transition-colors">
-                  {news.title}
-                </h4>
-                <p className="text-neutral-500 text-sm font-light leading-relaxed mb-6 line-clamp-3">
-                  {news.excerpt}
-                </p>
-                <div className="mt-auto pt-4 border-t border-neutral-50 flex items-center text-xs font-semibold uppercase tracking-widest text-black group-hover:text-red-600 transition-colors">
-                  Đọc chi tiết <ArrowRight size={14} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                <div className="flex flex-col flex-1 px-2 pb-2">
+                  <span className="text-neutral-400 text-[11px] font-medium tracking-widest mb-3 flex items-center gap-2 uppercase">
+                    <Clock size={12} /> {news.date}
+                  </span>
+                  <h4 className="text-xl font-semibold mb-3 leading-snug group-hover:text-red-600 transition-colors">
+                    {news.title}
+                  </h4>
+                  <p className="text-neutral-500 text-sm font-light leading-relaxed mb-6 line-clamp-3">
+                    {news.excerpt}
+                  </p>
+                  <div className="mt-auto pt-4 border-t border-neutral-50 flex items-center text-xs font-semibold uppercase tracking-widest text-black group-hover:text-red-600 transition-colors">
+                    Đọc chi tiết <ArrowRight size={14} className="ml-2 group-hover:translate-x-1 transition-transform" />
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </section>
 
-      {/* 4. FOOTER (Đồng bộ trang chủ) */}
+      {/* 4. FOOTER */}
       <footer className="bg-black text-white pt-24 pb-10 px-6 border-t-8 border-neutral-900 mt-auto">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 border-b border-neutral-800 pb-16 mb-8">
           <div className="lg:col-span-5">
             <h2 className="text-4xl font-semibold mb-4 uppercase tracking-widest leading-none">Minh Anh</h2>
             <span className="text-sm text-neutral-500 tracking-[0.4em] uppercase block mb-6">E-Scooter</span>
             <p className="text-neutral-400 text-sm leading-relaxed font-light max-w-sm mb-8">Nâng tầm phong cách di chuyển đô thị. Hệ thống phân phối các dòng xe điện Powelldd, TMT, Vinfast....chính hãng hàng đầu Việt Nam.</p>
-            <div className="flex gap-4">
-              <a href="https://www.facebook.com/profile.php?id=61585209534176" target="_blank" rel="noreferrer" className="bg-neutral-800 p-3 rounded-full hover:bg-blue-600 hover:text-white transition-all shadow-sm"><FacebookIcon size={20} /></a>
-              <a href="https://zalo.me/0917747777" target="_blank" rel="noreferrer" className="bg-neutral-800 p-3 rounded-full hover:bg-blue-500 transition-all shadow-sm flex items-center justify-center"><img src="/images/logo-zalo-tiktok-facebook/logo-zalo-footer.png" alt="Zalo" className="w-5 h-5 object-contain rounded-full" /></a>
-              <a href="https://www.tiktok.com/@powelldd.long.bien" target="_blank" rel="noreferrer" className="bg-neutral-800 p-3 rounded-full hover:bg-gray-700 hover:text-white transition-all shadow-sm"><TiktokIcon size={20} /></a>
-            </div>
           </div>
           <div className="lg:col-span-4">
             <h3 className="text-sm font-semibold mb-8 uppercase tracking-[0.2em] text-neutral-200">Trải nghiệm thực tế</h3>
             <div className="space-y-6 text-neutral-400 font-light text-sm">
-              <a href="https://www.google.com/maps/search/?api=1&query=547+Nguyễn+Văn+Cừ,+Bồ+Đề,+Hà+Nội" target="_blank" rel="noreferrer" className="flex items-start gap-4 hover:text-white transition-colors"><MapPin className="shrink-0 text-white" size={18} /> Số 547 Nguyễn Văn Cừ, Bồ Đề, Hà Nội</a>
+              <a href="#" className="flex items-start gap-4 hover:text-white transition-colors"><MapPin className="shrink-0 text-white" size={18} /> Số 547 Nguyễn Văn Cừ, Bồ Đề, Hà Nội</a>
               <p className="flex items-center gap-4 hover:text-white transition-colors"><Phone className="shrink-0 text-white" size={18} /> <a href="tel:0917747777" className="text-xl font-medium tracking-wider">091.774.7777</a></p>
-              <p className="flex items-center gap-4 hover:text-white transition-colors"><Clock className="shrink-0 text-white" size={18} /> 08:00 - 21:00 (Thứ 2 - Chủ Nhật)</p>
             </div>
           </div>
-          <div className="lg:col-span-3">
-            <h3 className="text-sm font-semibold mb-8 uppercase tracking-[0.2em] text-neutral-200">Dịch vụ</h3>
-            <ul className="space-y-4 font-medium text-sm text-neutral-400">
-              <li><Link href="/" className="hover:text-white transition-colors">Chính sách bảo hành</Link></li>
-              <li><Link href="/" className="hover:text-white transition-colors">Hướng dẫn trả góp</Link></li>
-            </ul>
-          </div>
-        </div>
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-neutral-500 text-[10px] font-medium uppercase tracking-[0.2em]">
-          <p>© 2026 MINH ANH E-SCOOTER. ALL RIGHTS RESERVED.</p>
         </div>
       </footer>
-
-      {/* 5. NÚT LIÊN HỆ NỔI */}
-      <div className="fixed bottom-6 right-6 z-[900] flex flex-col gap-5">
-        <div className="relative w-14 h-14 group">
-          <span className="absolute inset-0 rounded-full bg-[#0068FF] animate-ping opacity-60 group-hover:opacity-0 transition-opacity duration-300"></span>
-          <motion.a href="https://zalo.me/0917747777" target="_blank" rel="noreferrer" animate={{ rotate: [0, -15, 15, -15, 15, 0, 0, 0, 0, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut", delay: 0 }} className="relative flex items-center justify-center w-full h-full rounded-full shadow-xl shadow-[#0068FF]/50 hover:scale-110 transition-transform overflow-hidden bg-white">
-            <img src="/images/logo-zalo-tiktok-facebook/logo-zalo.png" alt="Zalo" className="w-full h-full object-cover" />
-          </motion.a>
-        </div>
-        <div className="relative w-14 h-14 group">
-          <span className="absolute inset-0 rounded-full bg-[#0084FF] animate-ping opacity-60 group-hover:opacity-0 transition-opacity duration-300" style={{ animationDelay: '0.5s' }}></span>
-          <motion.a href="https://m.me/61585209534176" target="_blank" rel="noreferrer" animate={{ rotate: [0, -15, 15, -15, 15, 0, 0, 0, 0, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }} className="relative flex items-center justify-center w-full h-full bg-gradient-to-tr from-[#00C6FF] to-[#0072FF] text-white rounded-full shadow-xl shadow-blue-500/50 hover:scale-110 transition-transform">
-            <MessengerIcon size={34} />
-          </motion.a>
-        </div>
-      </div>
     </main>
   );
 }
