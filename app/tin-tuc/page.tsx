@@ -23,28 +23,22 @@ const elegantFont = Plus_Jakarta_Sans({
   display: "swap"
 });
 
-// Hàm đọc dữ liệu trực tiếp từ file JSON do Bot tạo ra
-// Sửa lại đoạn này trong file tin-tuc/page.tsx
+// Hàm đọc dữ liệu an toàn
 async function getNewsData() {
   try {
-    // Sửa đường dẫn từ 'src', 'data' thành 'public'
     const filePath = path.join(process.cwd(), 'public', 'newsData.json');
-    
-    if (!fs.existsSync(filePath)) {
-      console.error("Không tìm thấy file tại:", filePath);
-      return []; 
-    }
+    if (!fs.existsSync(filePath)) return [];
     
     const fileContents = fs.readFileSync(filePath, 'utf8');
-    return JSON.parse(fileContents);
+    const data = JSON.parse(fileContents);
+    return Array.isArray(data) ? data : [];
   } catch (error) {
-    console.error("Lỗi đọc file tin tức:", error);
+    console.error("Lỗi đọc file:", error);
     return [];
   }
 }
 
 export default async function NewsPage() {
-  // Lấy danh sách tin tức theo thời gian thực
   const newsList = await getNewsData();
 
   return (
@@ -56,21 +50,19 @@ export default async function NewsPage() {
             <h1 className="text-2xl font-semibold tracking-widest uppercase text-black leading-none">Minh Anh</h1>
             <span className="text-[10px] font-medium tracking-widest text-neutral-500 uppercase mt-1">E-Scooter</span>
           </Link>
-          
           <nav className="hidden lg:flex gap-10 text-[13px] font-semibold uppercase tracking-widest text-neutral-600">
             <Link href="/" className="hover:text-black transition-colors">Trang chủ</Link>
             <Link href="/#san-pham" className="hover:text-black transition-colors">Sản phẩm</Link>
             <Link href="/#cong-nghe" className="hover:text-black transition-colors">Công nghệ</Link>
             <Link href="/tin-tuc" className="text-black transition-colors">Tin tức</Link>
           </nav>
-
           <Link href="/#showroom" className="hidden md:flex items-center gap-2 bg-black text-white px-7 py-3 rounded-full text-sm font-semibold shadow-xl shadow-black/20 hover:scale-105 transition-transform">
             Liên hệ <ArrowRight size={16} />
           </Link>
         </div>
       </header>
 
-      {/* 2. HERO BANNER TIN TỨC */}
+      {/* 2. HERO BANNER */}
       <section className="pt-36 pb-16 px-6 bg-white border-b border-neutral-100 relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-64 bg-neutral-100 rounded-full blur-[100px] opacity-50 pointer-events-none"></div>
         <div className="max-w-7xl mx-auto text-center relative z-10">
@@ -88,9 +80,9 @@ export default async function NewsPage() {
 
       {/* 3. GRID TIN TỨC */}
       <section className="py-20 px-6 max-w-7xl mx-auto min-h-[50vh]">
-        {newsList.length === 0 ? (
+        {!Array.isArray(newsList) || newsList.length === 0 ? (
           <div className="text-center text-neutral-500 py-10">
-            Chưa có bài viết nào. Đang chờ hệ thống AI cập nhật tin tức...
+            Chưa có bài viết nào hoặc hệ thống đang cập nhật...
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
@@ -106,7 +98,6 @@ export default async function NewsPage() {
                   </div>
                   <img src={news.image} alt={news.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                 </div>
-
                 <div className="flex flex-col flex-1 px-2 pb-2">
                   <span className="text-neutral-400 text-[11px] font-medium tracking-widest mb-3 flex items-center gap-2 uppercase">
                     <Clock size={12} /> {news.date}
