@@ -102,8 +102,10 @@ export async function fetchNewsContent(url: string) {
     await browser.close();
     return { content, imageUrl };
     
-  } catch (error) {
+  } catch (error: any) {
     if (browser) await browser.close();
+    // In hẳn cái lỗi thật ra xem nó báo cái gì anh nhé
+    console.error("❌ LỖI THẬT SỰ ĐÂY ANH ĐẠO ĐỪNG BỎ QUA:", error?.message || error);
     return { error: "Lỗi kết nối trình duyệt ảo hoặc web load quá lâu." };
   }
 }
