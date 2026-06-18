@@ -12,46 +12,56 @@ const elegantFont = Plus_Jakarta_Sans({
   display: "swap"
 });
 
-// Hàm tìm bài viết theo ID (Đã fix đúng đường dẫn public)
+// Hàm đọc file cứng, dập tắt mọi lỗi đường dẫn
 async function getArticleById(id: string) {
   try {
-    let filePath = path.join(process.cwd(), 'public', 'newsData.json');
-    if (!fs.existsSync(filePath)) filePath = '/var/www/shop-xe-dien/public/newsData.json';
+    // Khóa cứng đường dẫn tuyệt đối của VPS
+    const filePath = '/var/www/shop-xe-dien/public/newsData.json';
     if (!fs.existsSync(filePath)) return null;
     
     const fileContents = fs.readFileSync(filePath, 'utf8');
     const data = JSON.parse(fileContents);
-    
-    // Nắn dữ liệu thành mảng (trường hợp data chỉ có 1 Object)
     const newsList = Array.isArray(data) ? data : [data];
-    return newsList.find((news: any) => news.id && news.id.toString() === id);
+
+    // Decode URL (đề phòng trình duyệt mã hóa dấu gạch ngang)
+    const decodedId = decodeURIComponent(id);
+    
+    return newsList.find((news: any) => {
+        if (!news.id) return false;
+        const currentId = news.id.toString();
+        return currentId === id || currentId === decodedId;
+    });
   } catch (error) {
     return null;
   }
 }
 
-export default async function NewsDetail({ params }: { params: { id: string } }) {
-  const article = await getArticleById(params.id);
+export default async function NewsDetail({ params }: { params: any }) {
+  // BẮT BUỘC TRỊ LỖI NEXT.JS 15: Ép params giải nén trước khi dùng
+  const resolvedParams = await Promise.resolve(params);
+  const articleId = resolvedParams.id;
+  
+  const article = await getArticleById(articleId);
 
   if (!article) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#F4F4F6]">
-        <h1 className="text-2xl font-bold mb-4">Không tìm thấy bài viết!</h1>
-        <Link href="/tin-tuc" className="text-blue-600 hover:underline flex items-center gap-2">
-          <ArrowLeft size={16}/> Trở về trang tin tức
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#F4F4F6] px-6 text-center">
+        <h1 className="text-3xl font-bold mb-2 text-black">Không tìm thấy bài viết!</h1>
+        {/* Dòng này cực quan trọng: In ra cái ID để anh em mình bắt bệnh nếu nó vẫn lỳ */}
+        <p className="text-red-500 mb-8 font-mono text-sm bg-red-50 px-4 py-2 rounded">Log kiểm tra ID: {articleId}</p>
+        <Link href="/tin-tuc" className="bg-black text-white px-6 py-3 rounded-full hover:scale-105 transition-transform flex items-center gap-2">
+          <ArrowLeft size={16}/> Quay lại danh sách
         </Link>
       </div>
     );
   }
 
-  // Sửa thành article.content vì con Bot lưu là 'content'
   const rawContent = article.content || article.fullContent || "";
   const paragraphs = rawContent.split('\n\n').filter((p: string) => p.trim() !== '');
 
-  // Hàm giúp tự động in đậm các đoạn chữ được bọc trong **
   const renderParagraph = (text: string) => {
     const parts = text.split(/(\*\*.*?\*\*)/g);
-    return parts.map((part, i) => {
+    return parts.map((part: any, i: number) => {
       if (part.startsWith('**') && part.endsWith('**')) {
         return <strong key={i} className="font-semibold text-black">{part.slice(2, -2)}</strong>;
       }
@@ -59,13 +69,11 @@ export default async function NewsDetail({ params }: { params: { id: string } })
     });
   };
 
-  // Chuẩn hóa dữ liệu ảnh và ngày
   const imgUrl = article.imageUrl || article.image || "/images/default-news.jpg";
   const dateStr = article.createdAt ? new Date(article.createdAt).toLocaleDateString('vi-VN') : (article.date || "Vừa cập nhật");
 
   return (
     <main className={`min-h-screen bg-white text-neutral-800 ${elegantFont.className} font-light`}>
-      {/* HEADER ĐƠN GIẢN */}
       <header className="w-full bg-white/80 backdrop-blur-2xl z-50 border-b border-neutral-100">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center">
           <Link href="/tin-tuc" className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.2em] uppercase text-neutral-400 hover:text-black transition-colors">
@@ -74,13 +82,11 @@ export default async function NewsDetail({ params }: { params: { id: string } })
         </div>
       </header>
 
-      {/* ẢNH BÌA */}
       <div className="w-full h-[40vh] md:h-[60vh] relative bg-neutral-100">
         <img src={imgUrl} alt={article.title} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
       </div>
 
-      {/* NỘI DUNG BÀI VIẾT */}
       <article className="max-w-3xl mx-auto px-6 py-16 -mt-32 relative z-10 bg-white rounded-t-[3rem] shadow-2xl shadow-black/5">
         <div className="flex items-center gap-4 text-neutral-500 text-xs font-medium uppercase tracking-widest mb-6">
           <span className="bg-neutral-100 px-3 py-1 rounded-full text-black">{article.category || "Tin Tức"}</span>
@@ -101,7 +107,6 @@ export default async function NewsDetail({ params }: { params: { id: string } })
           ))}
         </div>
 
-        {/* LIÊN HỆ ĐẶT XE SAU KHI ĐỌC XONG */}
         <div className="mt-16 p-8 bg-neutral-50 rounded-3xl text-center border border-neutral-100">
           <h3 className="text-xl font-semibold mb-3">Bạn quan tâm đến các dòng xe điện tại Minh Anh?</h3>
           <p className="text-neutral-500 mb-6">Liên hệ ngay để nhận báo giá và ưu đãi mới nhất hôm nay.</p>
