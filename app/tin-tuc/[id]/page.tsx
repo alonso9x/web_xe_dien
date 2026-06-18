@@ -12,15 +12,19 @@ const elegantFont = Plus_Jakarta_Sans({
   display: "swap"
 });
 
-// Hàm tìm bài viết theo ID
+// Hàm tìm bài viết theo ID (Đã fix đúng đường dẫn public)
 async function getArticleById(id: string) {
   try {
-    const filePath = path.join(process.cwd(), 'src', 'data', 'newsData.json');
+    let filePath = path.join(process.cwd(), 'public', 'newsData.json');
+    if (!fs.existsSync(filePath)) filePath = '/var/www/shop-xe-dien/public/newsData.json';
     if (!fs.existsSync(filePath)) return null;
     
     const fileContents = fs.readFileSync(filePath, 'utf8');
-    const newsList = JSON.parse(fileContents);
-    return newsList.find((news: any) => news.id.toString() === id);
+    const data = JSON.parse(fileContents);
+    
+    // Nắn dữ liệu thành mảng (trường hợp data chỉ có 1 Object)
+    const newsList = Array.isArray(data) ? data : [data];
+    return newsList.find((news: any) => news.id && news.id.toString() === id);
   } catch (error) {
     return null;
   }
@@ -40,10 +44,24 @@ export default async function NewsDetail({ params }: { params: { id: string } })
     );
   }
 
-  // Tách nội dung thành các đoạn văn (P) dựa trên dấu xuống dòng
-  const paragraphs = article.fullContent 
-    ? article.fullContent.split('\n\n').filter((p: string) => p.trim() !== '')
-    : [];
+  // Sửa thành article.content vì con Bot lưu là 'content'
+  const rawContent = article.content || article.fullContent || "";
+  const paragraphs = rawContent.split('\n\n').filter((p: string) => p.trim() !== '');
+
+  // Hàm giúp tự động in đậm các đoạn chữ được bọc trong **
+  const renderParagraph = (text: string) => {
+    const parts = text.split(/(\*\*.*?\*\*)/g);
+    return parts.map((part, i) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={i} className="font-semibold text-black">{part.slice(2, -2)}</strong>;
+      }
+      return part;
+    });
+  };
+
+  // Chuẩn hóa dữ liệu ảnh và ngày
+  const imgUrl = article.imageUrl || article.image || "/images/default-news.jpg";
+  const dateStr = article.createdAt ? new Date(article.createdAt).toLocaleDateString('vi-VN') : (article.date || "Vừa cập nhật");
 
   return (
     <main className={`min-h-screen bg-white text-neutral-800 ${elegantFont.className} font-light`}>
@@ -58,15 +76,15 @@ export default async function NewsDetail({ params }: { params: { id: string } })
 
       {/* ẢNH BÌA */}
       <div className="w-full h-[40vh] md:h-[60vh] relative bg-neutral-100">
-        <img src={article.image} alt={article.title} className="w-full h-full object-cover" />
+        <img src={imgUrl} alt={article.title} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
       </div>
 
       {/* NỘI DUNG BÀI VIẾT */}
       <article className="max-w-3xl mx-auto px-6 py-16 -mt-32 relative z-10 bg-white rounded-t-[3rem] shadow-2xl shadow-black/5">
         <div className="flex items-center gap-4 text-neutral-500 text-xs font-medium uppercase tracking-widest mb-6">
-          <span className="bg-neutral-100 px-3 py-1 rounded-full text-black">{article.category || "Điểm tin"}</span>
-          <span className="flex items-center gap-1"><Calendar size={14}/> {article.date}</span>
+          <span className="bg-neutral-100 px-3 py-1 rounded-full text-black">{article.category || "Tin Tức"}</span>
+          <span className="flex items-center gap-1"><Calendar size={14}/> {dateStr}</span>
         </div>
 
         <h1 className="text-3xl md:text-5xl font-semibold leading-tight mb-8">
@@ -77,9 +95,9 @@ export default async function NewsDetail({ params }: { params: { id: string } })
           {article.excerpt}
         </div>
 
-        <div className="space-y-6 text-neutral-700 leading-loose text-[17px]">
+        <div className="space-y-6 text-neutral-700 leading-loose text-[17px] text-justify">
           {paragraphs.map((p: string, idx: number) => (
-            <p key={idx}>{p}</p>
+            <p key={idx}>{renderParagraph(p)}</p>
           ))}
         </div>
 

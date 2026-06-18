@@ -3,6 +3,15 @@ import { rewriteArticle } from './aiService';
 import * as fs from 'fs';
 import path from 'path';
 
+// Hàm tự động đẻ ra ID siêu chuẩn từ tiêu đề
+function generateSlug(text: string) {
+  return text.toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
 async function run() {
   console.log("🚀 BẮT ĐẦU QUÁ TRÌNH TỰ ĐỘNG CÀO TIN...");
   
@@ -45,34 +54,63 @@ async function run() {
       console.log("🎉 KẾT QUẢ AI ĐÃ VIẾT XONG.");
       console.log("==============================================\n");
       
-      // --- ĐOẠN LƯU FILE NẰM Ở ĐÂY ---
-      const articleData = {
-          title: aiResult.newTitle,
-          excerpt: aiResult.excerpt,
-          content: contentString,
-          imageUrl: scrapedData.imageUrl, // Lấy link ảnh từ dữ liệu cào
-          createdAt: new Date().toISOString()
-      };
-
+      // --- BẮT ĐẦU ĐOẠN XỬ LÝ LƯU FILE CHỐNG TRÙNG VÀ TẠO ID ---
       const dir = path.join(process.cwd(), 'public');
       if (!fs.existsSync(dir)){
           fs.mkdirSync(dir, { recursive: true });
       }
-      
       const filePath = path.join(dir, 'newsData.json');
-      fs.writeFileSync(filePath, JSON.stringify(articleData, null, 2));
-      console.log("✅ Đã lưu xong dữ liệu vào: public/newsData.json");
+
+      // 1. Đọc dữ liệu cũ lên (Nếu có)
+      let currentData: any[] = [];
+      if (fs.existsSync(filePath)) {
+        try {
+          const fileContents = fs.readFileSync(filePath, 'utf8');
+          const parsed = JSON.parse(fileContents);
+          // Ép kiểu về Mảng
+          currentData = Array.isArray(parsed) ? parsed : [parsed]; 
+        } catch (e) {
+          console.log("⚠️ File JSON cũ trống hoặc lỗi, bắt đầu tạo mảng mới.");
+        }
+      }
+
+      // 2. Chốt chặn chống trùng lặp
+      const finalTitle = aiResult.newTitle || news.title;
+      const isDuplicate = currentData.some(item => item.title === finalTitle);
+      
+      if (isDuplicate) {
+        console.log(`❌ BỎ QUA: Bài viết "${finalTitle}" đã có trên web! Chuyển sang bài tiếp theo...`);
+        continue; // Nhảy sang cào bài tiếp theo ngay
+      }
+
+      // 3. Đóng gói bài viết xịn xò
+      const articleData = {
+          id: generateSlug(finalTitle), // ID ở đây rồi!
+          category: "Tin Tức",
+          title: finalTitle,
+          excerpt: aiResult.excerpt,
+          content: contentString,
+          imageUrl: scrapedData.imageUrl,
+          createdAt: new Date().toISOString()
+      };
+
+      // 4. Bơm lên đầu danh sách và giữ 50 bài mới nhất cho mượt web
+      currentData.unshift(articleData);
+      if (currentData.length > 50) currentData.length = 50;
+
+      fs.writeFileSync(filePath, JSON.stringify(currentData, null, 2), 'utf8');
+      console.log(`✅ Đã thêm bài viết mới vào kho dữ liệu! (ID: ${articleData.id})`);
       // -------------------------------
       
       success = true;
-      break; 
+      break; // Lấy được 1 bài mới là nghỉ, đợi mai chạy tiếp
     } else {
       console.log("⚠️ AI xử lý lỗi, thử bài tiếp theo...");
     }
   }
 
   if (!success) {
-    console.log("\n❌ Đã thử hết 5 bài mới nhất nhưng đều thất bại. Đợi ngày mai thử lại!");
+    console.log("\n❌ Đã thử hết 5 bài mới nhất nhưng toàn bộ đều đã bị trùng hoặc lỗi AI. Hệ thống đi ngủ!");
   }
 }
 
