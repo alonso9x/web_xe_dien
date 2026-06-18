@@ -68,10 +68,10 @@ export async function fetchNewsContent(url: string) {
       content += $(el).text().trim() + '\n\n';
     });
 
-    // Lấy link ảnh
+    // Lấy link ảnh gốc từ bài báo
     let imageUrl = $('meta[property="og:image"]').attr('content') || $('img').first().attr('src') || null;
 
-    // --- BẮT ĐẦU ĐOẠN CODE TẢI ẢNH ---
+    // --- BẮT ĐẦU ĐOẠN CODE TẢI ẢNH CHUẨN ĐƯỜNG DẪN ---
     if (imageUrl) {
         try {
             // Xử lý link tương đối (nếu thiếu http thì thêm vào)
@@ -81,17 +81,19 @@ export async function fetchNewsContent(url: string) {
             if (viewSource) {
                 const buffer = await viewSource.buffer();
                 
-                // Tạo thư mục nếu chưa có
-                if (!fs.existsSync('public/images')) {
-                    fs.mkdirSync('public/images', { recursive: true });
+                // 1. Kiểm tra và tạo thư mục public/images/news nếu chưa có
+                if (!fs.existsSync('public/images/news')) {
+                    fs.mkdirSync('public/images/news', { recursive: true });
                 }
 
-                // Dùng timestamp làm tên file
+                // Dùng timestamp làm tên file tránh trùng lặp
                 const fileName = `img_${Date.now()}.jpg`;
-                fs.writeFileSync(`public/images/${fileName}`, buffer);
                 
-                // Cập nhật lại đường dẫn ảnh để lưu vào DB/JSON
-                imageUrl = `/images/${fileName}`;
+                // 2. Lưu file ảnh vào đúng public/images/news
+                fs.writeFileSync(`public/images/news/${fileName}`, buffer);
+                
+                // 3. Trả về đường dẫn chuẩn để Next.js hiển thị trên giao diện web
+                imageUrl = `/images/news/${fileName}`;
             }
         } catch (err) {
             console.error("Không tải được ảnh, bỏ qua:", err);
@@ -104,7 +106,7 @@ export async function fetchNewsContent(url: string) {
     
   } catch (error: any) {
     if (browser) await browser.close();
-    // In hẳn cái lỗi thật ra xem nó báo cái gì anh nhé
+    // Bắn lỗi chi tiết ra console trên VPS để kiểm tra bệnh
     console.error("❌ LỖI THẬT SỰ ĐÂY ANH ĐẠO ĐỪNG BỎ QUA:", error?.message || error);
     return { error: "Lỗi kết nối trình duyệt ảo hoặc web load quá lâu." };
   }
