@@ -24,10 +24,16 @@ const elegantFont = Plus_Jakarta_Sans({
 });
 
 // Hàm đọc dữ liệu trực tiếp từ file JSON do Bot tạo ra
+// Sửa lại đoạn này trong file tin-tuc/page.tsx
 async function getNewsData() {
   try {
-    const filePath = path.join(process.cwd(), 'src', 'data', 'newsData.json');
-    if (!fs.existsSync(filePath)) return []; // Nếu bot chưa chạy lần nào thì trả về mảng rỗng
+    // Sửa đường dẫn từ 'src', 'data' thành 'public'
+    const filePath = path.join(process.cwd(), 'public', 'newsData.json');
+    
+    if (!fs.existsSync(filePath)) {
+      console.error("Không tìm thấy file tại:", filePath);
+      return []; 
+    }
     
     const fileContents = fs.readFileSync(filePath, 'utf8');
     return JSON.parse(fileContents);
