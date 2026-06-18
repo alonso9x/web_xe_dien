@@ -24,12 +24,16 @@ export async function getLatestNewsLinks(keyword: string) {
 }
 
 export async function fetchNewsContent(url: string) {
-  let browser;
+  let browser: any = null;
   try {
     // Khởi động Chrome ẩn danh
     browser = await puppeteer.launch({
-      headless: true, // Chạy ngầm không hiện cửa sổ
-      args: ['--no-sandbox', '--disable-setuid-sandbox'] // Tối ưu để không bị lỗi trên VPS
+      headless: true,
+      args: [
+        '--no-sandbox',
+        '--disable-setuid-sandbox',
+        '--disable-dev-shm-usage'
+      ]
     });
     
     const page = await browser.newPage();
