@@ -3,7 +3,6 @@ import Parser from 'rss-parser';
 import puppeteer from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 
-// Kích hoạt lớp giáp tàng hình chống chặn Bot
 puppeteer.use(StealthPlugin());
 const parser = new Parser();
 
@@ -11,7 +10,6 @@ export async function getLatestNewsLinks(keyword: string) {
   try {
     const feed = await parser.parseURL(`https://news.google.com/rss/search?q=${encodeURIComponent(keyword)}&hl=vi&gl=VN&ceid=VN:vi`);
     if (feed.items && feed.items.length > 0) {
-      // Trả về 5 bài mới nhất để làm mồi
       return feed.items.slice(0, 5).map((item: any) => ({
         title: item.title,
         link: item.link
@@ -26,7 +24,6 @@ export async function getLatestNewsLinks(keyword: string) {
 export async function fetchNewsContent(url: string) {
   let browser: any = null;
   try {
-    // Khởi động Chrome ẩn danh
     browser = await puppeteer.launch({
       headless: true,
       args: [
@@ -37,33 +34,41 @@ export async function fetchNewsContent(url: string) {
     });
     
     const page = await browser.newPage();
+
+    // --- CHÈN ĐOẠN NÀY VÀO ĐÂY ---
+    await page.setRequestInterception(true);
+    page.on('request', (req: any) => {
+      if (['stylesheet', 'font', 'media'].includes(req.resourceType())) {
+        req.abort();
+      } else {
+        req.continue();
+      }
+    });
+    // ----------------------------
+
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36');
-    // Giả dạng kích thước màn hình người dùng thật
     await page.setViewport({ width: 1280, height: 720 });
 
-    // Truy cập link báo và chờ trang load xong
+    // Truy cập link báo
     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
     
-    // NGHỈ CHÂN 3 GIÂY: Để lách qua màn hình chờ của Cloudflare và load hết JavaScript
-    await new Promise(resolve => setTimeout(resolve, 30000));
+    // LƯU Ý: Anh đang để 30 giây (30000), trên VPS rất dễ bị quá tải. 
+    // Nếu vẫn lỗi timeout, anh giảm xuống 5000 (5 giây) là đủ để web load text rồi!
+    await new Promise(resolve => setTimeout(resolve, 5000)); 
 
-    // Rút ruột toàn bộ HTML của trang web sau khi đã load xong
     const html = await page.content();
     const $ = cheerio.load(html);
     
-    // Kiểm tra xem có video không
     if ($('video').length > 0 || $('iframe[src*="youtube"]').length > 0) {
       await browser.close();
       return { error: "Bài viết chứa video, tự động bỏ qua." };
     }
 
     let content = '';
-    // Vét sạch các đoạn văn bản (bao phủ cấu trúc của mọi loại báo lớn nhỏ)
     $('article p, .content p, .detail-content p, .detail-cmain p, .singular-content p, p').each((i: number, el: any) => {
       content += $(el).text().trim() + '\n\n';
     });
 
-    // Bắt link ảnh chuẩn SEO của bài báo
     let imageUrl = $('meta[property="og:image"]').attr('content') || $('img').first().attr('src') || null;
 
     await browser.close();
