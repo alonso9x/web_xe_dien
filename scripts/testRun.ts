@@ -167,14 +167,22 @@ async function run() {
     if (isDuplicate) {
       console.log(`❌ BỎ QUA: Bài viết "${finalTitle}" đã có trên web!`);
     } else {
+      
+      // ==========================================
+      // VÙNG SỬA LỖI: LOGIC CHỌN ẢNH CHUẨN XÁC NHẤT
+      // ==========================================
       let finalImage = finalItem.imageUrl;
+      
       if (finalItem.link && finalItem.link.includes('dantri.com.vn')) {
           console.log("🛑 Nguồn Dân Trí: Chủ động bỏ qua ảnh gốc.");
           finalImage = "/images/default-news.jpg"; 
-      } else if (!healthyQueue.includes(finalItem)) {
-          console.log("⚠️ Bài từ dự phòng, dùng ảnh mặc định!");
+      } else if (!finalImage || finalImage.trim() === "") {
+          console.log("⚠️ Không có ảnh hợp lệ, dùng ảnh mặc định!");
           finalImage = "/images/default-news.jpg";
+      } else {
+          console.log(`✅ Sử dụng ảnh thành công: ${finalImage}`);
       }
+      // ==========================================
 
       const articleData = {
           id: generateSlug(finalTitle), 
