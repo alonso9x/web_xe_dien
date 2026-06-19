@@ -78,7 +78,8 @@ async function run() {
     }
 
     let imageUrl = scrapedData.imageUrl;
-    if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.startsWith('/images/')) {
+    // Bổ sung thêm check .includes('images/') để an toàn nếu code scraper trả về thiếu dấu '/'
+    if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.includes('images/')) {
       try {
         imageUrl = new URL(imageUrl, news.link).href;
       } catch (e) {
@@ -89,7 +90,7 @@ async function run() {
     const finalScrapedData = { ...scrapedData, imageUrl: imageUrl };
 
     // Nếu ảnh là file local (đã lưu ở bước scraper), auto Healthy
-    if (imageUrl && imageUrl.startsWith('/images/')) {
+    if (imageUrl && imageUrl.includes('images/')) {
         healthyQueue.push({ ...news, ...finalScrapedData });
     } else {
         // Chỉ chạy checkImage với link remote (nếu có)
@@ -103,14 +104,26 @@ async function run() {
     }
   }
 
-  // BẮT ĐẦU XỬ LÝ AI
+  // ========================================================
+  // VÙNG THAY ĐỔI: TRỘN NGẪU NHIÊN DANH SÁCH BÀI ĐỦ ĐIỀU KIỆN
+  // ========================================================
   let success = false;
   let finalItem: any = null;
   let finalAiResult: any = null;
 
+  if (healthyQueue.length > 0) {
+    console.log(`\n🎲 Tìm thấy ${healthyQueue.length} bài hàng xịn. Tiến hành trộn ngẫu nhiên để chọn bài...`);
+    // Thuật toán Fisher-Yates để trộn mảng khách quan nhất
+    for (let i = healthyQueue.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [healthyQueue[i], healthyQueue[j]] = [healthyQueue[j], healthyQueue[i]];
+    }
+  }
+
+  // BẮT ĐẦU XỬ LÝ AI VỚI DANH SÁCH ĐÃ ĐƯỢC TRỘN NGẪU NHIÊN
   for (let i = 0; i < healthyQueue.length; i++) {
     const item = healthyQueue[i];
-    console.log(`\n➡️ Đang thử bài [${i + 1}/${healthyQueue.length} - Hàng xịn]: ${item.title}`);
+    console.log(`\n🎲 [Lượt chọn ngẫu nhiên] Đang thử bài [${i + 1}/${healthyQueue.length} - Hàng xịn]: ${item.title}`);
     
     const aiResult = await rewriteArticle(item.content, item.title);
     if (aiResult) {
@@ -120,6 +133,7 @@ async function run() {
       break;
     }
   }
+  // ========================================================
 
   if (!success && fallbackQueue.length > 0) {
     console.log("\n🚨 Hàng xịn đã tạch hết, đang bốc thăm 1 bài từ hàng dự phòng...");
