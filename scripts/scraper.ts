@@ -24,6 +24,28 @@ export async function getLatestNewsLinks(keyword: string) {
   }
 }
 
+// HÀM KIỂM TRA ẢNH "SẠCH" (Chống logo, icon, ảnh rác)
+function isValidImage(url: string | undefined): boolean {
+  if (!url) return false;
+  const lowerUrl = url.toLowerCase();
+  
+  // Loại bỏ ảnh proxy của Google
+  if (lowerUrl.includes('google.com') || lowerUrl.includes('proxy')) return false;
+  
+  // Loại bỏ các định dạng rác và các từ khóa nhận diện logo/ảnh quảng cáo
+  if (lowerUrl.includes('.svg') || lowerUrl.includes('.gif')) return false;
+  if (
+      lowerUrl.includes('logo') || 
+      lowerUrl.includes('icon') || 
+      lowerUrl.includes('banner') || 
+      lowerUrl.includes('avatar')
+  ) {
+      return false;
+  }
+  
+  return true;
+}
+
 export async function fetchNewsContent(url: string) {
   let browser: any = null;
   try {
@@ -41,7 +63,7 @@ export async function fetchNewsContent(url: string) {
     
     const page = await browser.newPage();
 
-    // Chặn tài nguyên thừa
+    // Chặn tài nguyên thừa (tăng tốc độ cào)
     await page.setRequestInterception(true);
     page.on('request', (req: any) => {
       const type = req.resourceType();
@@ -73,26 +95,55 @@ export async function fetchNewsContent(url: string) {
       content += $(el).text().trim() + '\n\n';
     });
 
-    // --- BỘ LỌC ẢNH THÔNG MINH (CHỐNG 404) ---
+    // --- BỘ LỌC ẢNH THÔNG MINH MỚI (CHỐNG LOGO, CHỐNG RÁC) ---
     let rawImageUrl = '';
     
-    // Tìm tất cả ứng viên ảnh
-    const candidates = [
-        $('meta[property="og:image"]').attr('content'),
-        $('meta[property="twitter:image"]').attr('content'),
-        $('article img').first().attr('src'),
-        $('img').first().attr('src')
+    // 1. Ưu tiên tìm ảnh nằm TRONG khu vực nội dung bài viết trước
+    const contentAreaSelectors = [
+      'article img', 
+      '.detail-content img', 
+      '.article-content img', 
+      '.post-content img', 
+      '#main-detail img',
+      '.cms-body img',
+      '.content img'
     ];
 
-    // Lọc bỏ những link ảnh nào chứa "google.com" (đây là nguyên nhân gây 404)
-    for (const img of candidates) {
-        if (img && !img.includes('google.com') && !img.includes('proxy')) {
-            rawImageUrl = img;
-            console.log("✅ Tìm thấy ảnh hợp lệ:", rawImageUrl);
-            break;
-        } else if (img) {
-            console.log("⚠️ Bỏ qua ảnh proxy của Google:", img);
+    for (const selector of contentAreaSelectors) {
+      const imgEls = $(selector);
+      for (let i = 0; i < imgEls.length; i++) {
+        const src = $(imgEls[i]).attr('src') || $(imgEls[i]).attr('data-src');
+        if (isValidImage(src)) {
+          rawImageUrl = src as string;
+          break;
         }
+      }
+      if (rawImageUrl) break;
+    }
+
+    // 2. Nếu nội dung không có ảnh, vớt vát bằng ảnh meta (ảnh bìa lúc share Facebook)
+    if (!rawImageUrl) {
+        const ogImage = $('meta[property="og:image"]').attr('content') || $('meta[property="twitter:image"]').attr('content');
+        if (isValidImage(ogImage)) {
+            rawImageUrl = ogImage as string;
+        }
+    }
+
+    // 3. Nếu vẫn không có, tìm kiếm trên toàn trang nhưng PHẢI LỌC RẤT KỸ
+    if (!rawImageUrl) {
+      $('img').each((i: number, el: any) => {
+        const src = $(el).attr('src') || $(el).attr('data-src');
+        if (isValidImage(src)) {
+            rawImageUrl = src as string;
+            return false; // Dừng vòng lặp each
+        }
+      });
+    }
+
+    if (rawImageUrl) {
+        console.log("✅ Tìm thấy ảnh hợp lệ:", rawImageUrl);
+    } else {
+        console.warn("⚠️ Không tìm thấy ảnh nào hợp lệ (hoặc toàn logo/rác).");
     }
 
     await browser.close();
@@ -122,14 +173,13 @@ export async function fetchNewsContent(url: string) {
             fs.writeFileSync(filePath, Buffer.from(response.data, 'binary'));
             console.log(`💾 Đã lưu ảnh thành công: ${filePath}`);
             
-            return { content, imageUrl: `/images/news/${fileName}` };
+            // SỬA LỖI CRASH FRONTEND Ở ĐÂY: Bỏ dấu "/" ở đầu
+            return { content, imageUrl: `images/news/${fileName}` };
 
         } catch (err) {
             console.error("❌ Không tải được ảnh, nguyên nhân:", err);
             return { content, imageUrl: null };
         }
-    } else {
-        console.warn("⚠️ Không tìm thấy ảnh nào không phải của Google.");
     }
 
     return { content, imageUrl: null };
