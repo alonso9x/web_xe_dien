@@ -12,14 +12,25 @@ function generateSlug(text: string) {
     .replace(/^-|-$/g, '');
 }
 
-// Hàm kiểm tra ảnh sống/chết (Cập nhật mới)
-async function checkImage(url: string | null | undefined): Promise<boolean> {
-  if (!url || typeof url !== 'string' || !url.startsWith('http') || url.length < 10) return false;
+// HÀM CHECK ẢNH MỚI: Bổ sung Header để lách chặn bot
+async function checkImage(url: string | null | undefined): Promise<{ valid: boolean; reason: string }> {
+  if (!url || typeof url !== 'string' || !url.startsWith('http') || url.length < 10) 
+    return { valid: false, reason: "URL sai/trống" };
+
   try {
-    const response = await fetch(url, { method: 'HEAD' });
-    return response.ok;
-  } catch (e) {
-    return false;
+    const response = await fetch(url, { 
+      method: 'HEAD',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+        'Referer': new URL(url).origin,
+        'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
+      }
+    });
+    
+    if (response.ok) return { valid: true, reason: "OK" };
+    return { valid: false, reason: `HTTP Status ${response.status}` };
+  } catch (e: any) {
+    return { valid: false, reason: e.message || "Connection Failed" };
   }
 }
 
@@ -73,11 +84,11 @@ async function run() {
       continue;
     }
 
-    const isImageValid = await checkImage(scrapedData.imageUrl);
-    if (isImageValid) {
+    const imgStatus = await checkImage(scrapedData.imageUrl);
+    if (imgStatus.valid) {
       healthyQueue.push({ ...news, ...scrapedData });
     } else {
-      console.log(`⚠️ Bài "${news.title}" ảnh lỗi, đẩy vào danh sách dự phòng.`);
+      console.log(`⚠️ Bài "${news.title}" ảnh lỗi [${imgStatus.reason}], đẩy vào danh sách dự phòng.`);
       fallbackQueue.push({ ...news, ...scrapedData });
     }
   }
@@ -116,7 +127,7 @@ async function run() {
     }
   }
 
-  // GHI FILE JSON (Giữ nguyên logic cũ)
+  // GHI FILE JSON (Giữ nguyên logic cũ của ông)
   if (success && finalItem && finalAiResult) {
     const contentString = Array.isArray(finalAiResult.content) 
         ? finalAiResult.content.join('\n\n') 
