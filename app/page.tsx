@@ -4,8 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence, useScroll, useTransform, Variants } from "framer-motion";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
-// Đã bổ sung thêm icon Menu ở đây
-import { Zap, ShieldCheck, BatteryCharging, Leaf, Star, ArrowRight, MapPin, Phone, Clock, MessageCircle, X, CheckCircle2, Loader2, Menu } from "lucide-react";
+import { Zap, ShieldCheck, BatteryCharging, Leaf, Star, ArrowRight, MapPin, Phone, Clock, MessageCircle, X, CheckCircle2, Loader2 } from "lucide-react";
 
 // --- CUSTOM ICONS ---
 const FacebookIcon = ({ size = 24 }) => (
@@ -16,6 +15,7 @@ const MessengerIcon = ({ size = 24 }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.14 2 11.25c0 2.91 1.5 5.5 3.94 7.22.18.13.3.34.3.56v2.45c0 .4.46.62.77.38l2.84-2.19c.2-.15.44-.21.68-.18 1.13.16 2.29.25 3.47.25 5.523 0 10-4.14 10-9.25S17.523 2 12 2zm1.09 12.35l-2.48-2.65c-.2-.22-.55-.26-.8-.09l-3.23 2.17c-.36.24-.8-.2-.55-.57l3.66-5.59c.2-.3.57-.38.88-.19l2.48 1.55c.2.13.45.1.62-.07l3.52-3.35c.34-.32.84.14.58.53l-3.8 5.76c-.2.31-.57.4-.88.2z"/></svg>
 );
 
+// Icon Tiktok dạng nét viền (outline)
 const TiktokIcon = ({ size = 24 }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path>
@@ -30,6 +30,7 @@ const elegantFont = Plus_Jakarta_Sans({
   display: "swap"
 });
 
+// THỨ TỰ: wespan pro, dimoon, walkmen, shine, fancy, hazel, sweetea
 const powellddBikes = [
   { id: "wespan-pro", name: "Wespan pro", price: "20.500.000 VNĐ", range: "70 km", speed: "47 km/h", colors: ["Đen", "Trắng", "Vàng"], tagline: "Thiết kế vượt thời gian", coverImage: "/images/powelldd/wespan-pro/xam-bac-khi.png", signatureHex: "#D97706", category: "cao-cap" },
   { id: "dimoon", name: "Dimoon", price: "18.990.000 VNĐ", range: "90 km", speed: "48 km/h", colors: ["Đen vũ trụ", "Trắng", "Xanh titan"], tagline: "Biểu tượng thời thượng mới", coverImage: "/images/powelldd/dimoon/trang-bang-suong.png", signatureHex: "#1E3A8A", category: "cao-cap" },
@@ -55,9 +56,6 @@ export default function Home() {
   const filteredBikes = powellddBikes.filter(bike => filter === "all" ? true : bike.category === filter);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // Thêm state để quản lý Menu Mobile
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  
   const [formStatus, setFormStatus] = useState("idle");
   const [formData, setFormData] = useState({ name: "", phone: "", model: "Chưa xác định", note: "" });
 
@@ -121,6 +119,7 @@ export default function Home() {
             <span className="text-[10px] font-medium tracking-widest text-neutral-500 uppercase mt-1">E-Scooter</span>
           </motion.div>
           
+          {/* ĐÃ CẬP NHẬT ĐIỀU HƯỚNG BẰNG THẺ LINK CHUẨN */}
           <nav className="hidden lg:flex gap-10 text-[13px] font-semibold uppercase tracking-widest text-neutral-600">
             <Link href="/" className="hover:text-black transition-colors">Trang chủ</Link>
             <Link href="/#san-pham" className="hover:text-black transition-colors">Sản phẩm</Link>
@@ -128,67 +127,11 @@ export default function Home() {
             <Link href="/tin-tuc" className="hover:text-black transition-colors">Tin tức</Link>
           </nav>
 
-          {/* Nút Hamburger cho Mobile */}
-          <button 
-            onClick={() => setIsMobileMenuOpen(true)}
-            className="lg:hidden text-black p-2 hover:bg-neutral-100 rounded-full transition-colors"
-          >
-            <Menu size={28} />
-          </button>
-
           <motion.button onClick={() => setIsModalOpen(true)} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="hidden md:flex items-center gap-2 bg-black text-white px-7 py-3 rounded-full text-sm font-semibold shadow-xl shadow-black/20">
             Nhận tư vấn <ArrowRight size={16} />
           </motion.button>
         </div>
       </motion.header>
-
-      {/* TÍCH HỢP MENU MOBILE DẠNG DRAWER */}
-      <AnimatePresence>
-        {isMobileMenuOpen && (
-          <>
-            {/* Lớp mờ nền */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="fixed inset-0 bg-black/40 z-[998] lg:hidden backdrop-blur-sm"
-            />
-            
-            {/* Khung Menu trượt từ phải */}
-            <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 h-full w-[80%] max-w-sm bg-white z-[999] shadow-2xl flex flex-col lg:hidden"
-            >
-              <div className="flex justify-between items-center p-6 border-b border-neutral-100">
-                <span className="text-lg font-semibold tracking-widest uppercase text-black">Menu</span>
-                <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 bg-neutral-100 rounded-full text-black hover:bg-neutral-200 transition-colors">
-                  <X size={20} />
-                </button>
-              </div>
-              
-              <div className="flex flex-col p-6 gap-6 text-sm font-semibold uppercase tracking-widest text-neutral-600">
-                <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors pb-4 border-b border-neutral-50">Trang chủ</Link>
-                <Link href="/#san-pham" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors pb-4 border-b border-neutral-50">Sản phẩm</Link>
-                <Link href="/#cong-nghe" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors pb-4 border-b border-neutral-50">Công nghệ</Link>
-                <Link href="/tin-tuc" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors pb-4 border-b border-neutral-50">Tin tức</Link>
-              </div>
-
-              <div className="mt-auto p-6">
-                <button 
-                  onClick={() => { setIsMobileMenuOpen(false); setIsModalOpen(true); }} 
-                  className="w-full flex justify-center items-center gap-2 bg-black text-white px-7 py-4 rounded-full text-sm font-semibold shadow-xl shadow-black/20 hover:bg-red-600 transition-colors"
-                >
-                  Nhận tư vấn ngay <ArrowRight size={16} />
-                </button>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
 
       {/* 2. HERO SECTION */}
       <section className="relative w-full h-[100svh] flex items-center justify-center bg-black overflow-hidden">
@@ -210,6 +153,7 @@ export default function Home() {
           <motion.div variants={fadeUp} className="inline-block px-4 py-1.5 rounded-full border border-white/30 backdrop-blur-md mb-6">
             <span className="text-xs font-semibold tracking-[0.3em] uppercase text-neutral-200">Kỷ nguyên di chuyển xanh</span>
           </motion.div>
+          {/* Đã thêm pr-2 vào dòng PHONG CÁCH SỐNG để chữ G không bị lẹm */}
           <motion.h2 variants={fadeUp} className="text-5xl md:text-7xl font-semibold mb-6 tracking-tighter leading-[1.1] drop-shadow-2xl">
             ĐỊNH HÌNH <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-300 to-neutral-500 italic font-light pr-2">PHONG CÁCH SỐNG</span>
           </motion.h2>
@@ -381,6 +325,7 @@ export default function Home() {
       {/* 7. CTA & NÚT MỞ MODAL */}
       <section className="py-32 bg-white text-black text-center px-6 border-b border-neutral-100">
         <motion.div initial={{ scale: 0.95, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} transition={{ duration: 0.6 }} viewport={{ once: true }} className="max-w-4xl mx-auto">
+          {/* Đã thêm flex flex-col gap-y-4 md:gap-y-6 để tách dòng trên mobile */}
           <h2 className="text-4xl md:text-6xl font-semibold mb-8 tracking-widest uppercase flex flex-col gap-y-4 md:gap-y-6">
             <span>TRẢI NGHIỆM</span>
             <span>ĐẲNG CẤP</span>
@@ -489,13 +434,71 @@ export default function Home() {
 
       {/* --- CỤM NÚT LIÊN HỆ NỔI (KÈM MESSENGER) --- */}
       <div className="fixed bottom-6 right-6 z-[900] flex flex-col gap-5">
+        {/* Nút Zalo (Thay ảnh thật) */}
         <div className="relative w-14 h-14 group">
           <span className="absolute inset-0 rounded-full bg-[#0068FF] animate-ping opacity-60 group-hover:opacity-0 transition-opacity duration-300"></span>
           <motion.a href="https://zalo.me/0917747777" target="_blank" rel="noreferrer" animate={{ rotate: [0, -15, 15, -15, 15, 0, 0, 0, 0, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut", delay: 0 }} className="relative flex items-center justify-center w-full h-full rounded-full shadow-xl shadow-[#0068FF]/50 hover:scale-110 transition-transform overflow-hidden bg-white">
-            <img src="/images/logo-zalo-tiktok-facebook/logo-zalo.png" alt="Zalo" className="w-8 h-8 object-contain" />
+            <img src="/images/logo-zalo-tiktok-facebook/logo-zalo.png" alt="Zalo" className="w-full h-full object-cover" />
+          </motion.a>
+        </div>
+
+        {/* Nút Messenger */}
+        <div className="relative w-14 h-14 group">
+          <span className="absolute inset-0 rounded-full bg-[#0084FF] animate-ping opacity-60 group-hover:opacity-0 transition-opacity duration-300" style={{ animationDelay: '0.5s' }}></span>
+          <motion.a href="https://m.me/61585209534176" target="_blank" rel="noreferrer" animate={{ rotate: [0, -15, 15, -15, 15, 0, 0, 0, 0, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }} className="relative flex items-center justify-center w-full h-full bg-gradient-to-tr from-[#00C6FF] to-[#0072FF] text-white rounded-full shadow-xl shadow-blue-500/50 hover:scale-110 transition-transform">
+            <MessengerIcon size={34} />
           </motion.a>
         </div>
       </div>
+
+      {/* MODAL FORM */}
+      <AnimatePresence>
+        {isModalOpen && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center px-4">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsModalOpen(false)} className="absolute inset-0 bg-black/60 backdrop-blur-sm cursor-pointer" />
+            <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="relative bg-white w-full max-w-lg rounded-[2rem] p-8 shadow-2xl z-10 overflow-hidden">
+              <button onClick={() => setIsModalOpen(false)} className="absolute top-6 right-6 text-neutral-400 hover:text-black transition-colors"><X size={24} /></button>
+
+              {formStatus === "success" ? (
+                <div className="text-center py-10">
+                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="flex justify-center mb-6 text-green-500">
+                    <CheckCircle2 size={64} strokeWidth={1.5} />
+                  </motion.div>
+                  <h3 className="text-2xl font-bold mb-2">Đăng ký thành công!</h3>
+                  <p className="text-neutral-500">Cảm ơn anh/chị. Đội ngũ tư vấn viên của Minh Anh sẽ gọi lại trong thời gian sớm nhất.</p>
+                </div>
+              ) : (
+                <>
+                  <h3 className="text-2xl font-bold uppercase tracking-widest mb-2">Đăng ký tư vấn</h3>
+                  <p className="text-neutral-500 text-sm mb-8">Nhận ngay tư vấn chi tiết và voucher ưu đãi giới hạn.</p>
+
+                  <form onSubmit={handleSubmit} className="space-y-5">
+                    <div>
+                      <label className="block text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-2">Họ và tên *</label>
+                      <input required type="text" value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})} className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-3 outline-none focus:border-black focus:ring-1 focus:ring-black transition-all" placeholder="Nhập tên của bạn" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-2">Số điện thoại *</label>
+                      <input required type="tel" value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})} className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-3 outline-none focus:border-black focus:ring-1 focus:ring-black transition-all" placeholder="Nhập số điện thoại" />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold uppercase tracking-widest text-neutral-500 mb-2">Dòng xe quan tâm</label>
+                      <select value={formData.model} onChange={(e) => setFormData({...formData, model: e.target.value})} className="w-full bg-neutral-50 border border-neutral-200 rounded-xl px-4 py-3 outline-none focus:border-black focus:ring-1 focus:ring-black transition-all appearance-none cursor-pointer">
+                        <option value="Chưa xác định">Chưa xác định - Cần tư vấn thêm</option>
+                        {powellddBikes.map(bike => <option key={bike.id} value={bike.name}>{bike.name}</option>)}
+                      </select>
+                    </div>
+                    <button type="submit" disabled={formStatus === "submitting"} className="w-full bg-black text-white rounded-xl py-4 font-semibold uppercase tracking-widest mt-4 hover:bg-neutral-800 transition-colors flex items-center justify-center disabled:bg-neutral-400">
+                      {formStatus === "submitting" ? <Loader2 className="animate-spin" size={20} /> : "Gửi thông tin"}
+                    </button>
+                    {formStatus === "error" && <p className="text-red-500 text-xs text-center mt-2">Có lỗi xảy ra, vui lòng thử lại sau!</p>}
+                  </form>
+                </>
+              )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }
