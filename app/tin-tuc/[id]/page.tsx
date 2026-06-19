@@ -83,7 +83,15 @@ export default async function NewsDetail({ params }: { params: any }) {
       </header>
 
       <div className="w-full h-[40vh] md:h-[60vh] relative bg-neutral-100">
-        <img src={imgUrl} alt={article.title} className="w-full h-full object-cover" />
+        <img 
+  src={imgUrl} 
+  alt={article.title} 
+  className="w-full h-full object-cover" 
+  onError={(e) => {
+    // Nếu ảnh lỗi, tự động thế bằng ảnh mặc định này
+    e.currentTarget.src = "https://xedienminhanh.vn/images/default-news.jpg"; 
+  }}
+/>
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
       </div>
 

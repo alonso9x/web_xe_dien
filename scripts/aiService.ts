@@ -22,9 +22,9 @@ export async function rewriteArticle(rawContent: string, originalTitle: string):
     Nhiệm vụ của bạn là đọc nội dung bài báo dưới đây và viết lại thành một bài tin tức hoàn toàn mới và tự nhiên. Ưu tiên đưa các thông tin về xe điện, xe máy điện, xe đạp điện.
     
     Yêu cầu:
-    1. Giọng văn: Tích cực, trung lập, không thiên vị, không quảng cáo quá mức, tránh dùng từ "nhất", không dùng dấu * trong câu trả lời của bạn.
+    1. Giọng văn: Tích cực, trung lập, không thiên vị, không quảng cáo quá mức, không dùng dấu * trong câu trả lời của bạn.
     2. Chèn tự nhiên các cụm từ chuẩn SEO về xe điện.
-    3. Đưa góc nhìn đánh giá chuyên môn của Xe Điện Minh Anh vào bài viết. Không copy nguyên văn.
+    3. Đưa góc nhìn đánh giá chuyên môn của Xe Điện Minh Anh vào bài viết. Không copy nguyên văn. dòng cuối cùng lệch lề phải viết "Xe điện Minh Anh - Chất lượng cao tạo niềm tin". 
     4. BẮT BUỘC TRẢ VỀ ĐÚNG CẤU TRÚC JSON SAU (Không thêm bất kỳ văn bản nào khác ngoài JSON):
     {
       "newTitle": "Tiêu đề mới giật tít",
