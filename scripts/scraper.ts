@@ -173,8 +173,8 @@ export async function fetchNewsContent(url: string) {
             fs.writeFileSync(filePath, Buffer.from(response.data, 'binary'));
             console.log(`💾 Đã lưu ảnh thành công: ${filePath}`);
             
-            // SỬA LỖI CRASH FRONTEND Ở ĐÂY: Bỏ dấu "/" ở đầu
-            return { content, imageUrl: `images/news/${fileName}` };
+            // ĐÃ FIX: Thêm lại dấu "/" ở đầu để chống lỗi 404 đường dẫn tương đối trên Frontend
+            return { content, imageUrl: `/images/news/${fileName}` };
 
         } catch (err) {
             console.error("❌ Không tải được ảnh, nguyên nhân:", err);

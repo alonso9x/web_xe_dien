@@ -194,6 +194,10 @@ async function run() {
           console.log("⚠️ Không có ảnh hợp lệ, dùng ảnh mặc định!");
           finalImage = "/images/default-news.jpg";
       } else {
+          // ÉP DẤU "/" VÀO ĐẦU NẾU CHƯA CÓ ĐỂ TRÁNH LỖI ĐƯỜNG DẪN TƯƠNG ĐỐI
+          if (!finalImage.startsWith('/') && !finalImage.startsWith('http')) {
+              finalImage = '/' + finalImage;
+          }
           console.log(`✅ Sử dụng ảnh thành công: ${finalImage}`);
       }
       // ==========================================
