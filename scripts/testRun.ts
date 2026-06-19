@@ -37,9 +37,6 @@ async function checkImage(url: string | null | undefined): Promise<{ valid: bool
 async function run() {
   console.log("🚀 BẮT ĐẦU QUÁ TRÌNH TỰ ĐỘNG CÀO TIN CHUYÊN SÂU...");
   
-  // ========================================================
-  // 🎯 DANH SÁCH TỪ KHÓA MỤC TIÊU CỦA ANH
-  // ========================================================
   const targetKeywords = [
     "Powelldd",
     "TMT e-moto",
@@ -51,17 +48,14 @@ async function run() {
 
   let newsList: any[] = [];
 
-  // Vòng lặp đi gom tin từ tất cả từ khóa
   for (const kw of targetKeywords) {
     console.log(`🔍 Đang quét tin tức cho từ khóa: "${kw}"...`);
     const links = await getLatestNewsLinks(kw);
     if (links && links.length > 0) {
-      // Lấy 2 bài mới nhất của mỗi từ khóa để cho vào hàng đợi
       newsList = newsList.concat(links.slice(0, 2));
     }
   }
 
-  // Lọc trùng link nếu các từ khóa vô tình cào trùng nhau
   newsList = newsList.filter((value, index, self) =>
     self.findIndex(t => t.link === value.link) === index
   );
@@ -71,7 +65,6 @@ async function run() {
     return;
   }
 
-  // PHÂN LOẠI: Bài xịn (ảnh sống) và Bài dự phòng (ảnh chết)
   let healthyQueue: any[] = [];
   let fallbackQueue: any[] = [];
 
@@ -84,27 +77,29 @@ async function run() {
       continue;
     }
 
-    // --- CẢI TIẾN: Gộp đường dẫn tương đối thành tuyệt đối ---
     let imageUrl = scrapedData.imageUrl;
-    if (imageUrl && !imageUrl.startsWith('http')) {
+    if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.startsWith('/images/')) {
       try {
-        // Tự động ghép tên miền từ link gốc vào ảnh
         imageUrl = new URL(imageUrl, news.link).href;
       } catch (e) {
-        // Nếu fail thì giữ nguyên để checkImage xử lý
       }
     }
 
-    const imgStatus = await checkImage(imageUrl);
-    
-    // Cập nhật lại scrapedData với link đã chuẩn hóa
+    // --- SỬA CHỖ NÀY: Logic check ảnh mới ---
     const finalScrapedData = { ...scrapedData, imageUrl: imageUrl };
 
-    if (imgStatus.valid) {
-      healthyQueue.push({ ...news, ...finalScrapedData });
+    // Nếu ảnh là file local (đã lưu ở bước scraper), auto Healthy
+    if (imageUrl && imageUrl.startsWith('/images/')) {
+        healthyQueue.push({ ...news, ...finalScrapedData });
     } else {
-      console.log(`⚠️ Bài "${news.title}" ảnh lỗi [${imgStatus.reason}]. Link: ${imageUrl}, đẩy vào dự phòng.`);
-      fallbackQueue.push({ ...news, ...finalScrapedData });
+        // Chỉ chạy checkImage với link remote (nếu có)
+        const imgStatus = await checkImage(imageUrl);
+        if (imgStatus.valid) {
+            healthyQueue.push({ ...news, ...finalScrapedData });
+        } else {
+            console.log(`⚠️ Bài "${news.title}" ảnh lỗi [${imgStatus.reason}]. Link: ${imageUrl}, đẩy vào dự phòng.`);
+            fallbackQueue.push({ ...news, ...finalScrapedData });
+        }
     }
   }
 
@@ -113,7 +108,6 @@ async function run() {
   let finalItem: any = null;
   let finalAiResult: any = null;
 
-  // 1. Ưu tiên bài healthyQueue
   for (let i = 0; i < healthyQueue.length; i++) {
     const item = healthyQueue[i];
     console.log(`\n➡️ Đang thử bài [${i + 1}/${healthyQueue.length} - Hàng xịn]: ${item.title}`);
@@ -127,7 +121,6 @@ async function run() {
     }
   }
 
-  // 2. Nếu healthyQueue tạch hết, bốc random 1 bài từ fallbackQueue
   if (!success && fallbackQueue.length > 0) {
     console.log("\n🚨 Hàng xịn đã tạch hết, đang bốc thăm 1 bài từ hàng dự phòng...");
     const randomIdx = Math.floor(Math.random() * fallbackQueue.length);
@@ -142,7 +135,6 @@ async function run() {
     }
   }
 
-  // GHI FILE JSON (Giữ nguyên logic cũ của ông)
   if (success && finalItem && finalAiResult) {
     const contentString = Array.isArray(finalAiResult.content) 
         ? finalAiResult.content.join('\n\n') 
@@ -175,7 +167,6 @@ async function run() {
     if (isDuplicate) {
       console.log(`❌ BỎ QUA: Bài viết "${finalTitle}" đã có trên web!`);
     } else {
-      // XỬ LÝ ẢNH (Giữ nguyên logic Dantri và Default)
       let finalImage = finalItem.imageUrl;
       if (finalItem.link && finalItem.link.includes('dantri.com.vn')) {
           console.log("🛑 Nguồn Dân Trí: Chủ động bỏ qua ảnh gốc.");
