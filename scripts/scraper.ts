@@ -3,7 +3,7 @@ import Parser from 'rss-parser';
 import puppeteer from 'puppeteer-extra';
 import StealthPlugin from 'puppeteer-extra-plugin-stealth';
 import * as fs from 'fs';
-import axios from 'axios'; // Bổ sung thư viện để tải ảnh độc lập
+import axios from 'axios';
 
 puppeteer.use(StealthPlugin());
 const parser = new Parser();
@@ -19,6 +19,7 @@ export async function getLatestNewsLinks(keyword: string) {
     }
     return null;
   } catch (error) {
+    console.error("Lỗi RSS Parser:", error);
     return null;
   }
 }
@@ -26,23 +27,25 @@ export async function getLatestNewsLinks(keyword: string) {
 export async function fetchNewsContent(url: string) {
   let browser: any = null;
   try {
+    console.log(`🔍 Đang mở trình duyệt để cào: ${url}`);
+    
     browser = await puppeteer.launch({
       headless: true,
       args: [
-        '--no-sandbox',
-        '--disable-setuid-sandbox',
+        '--no-sandbox', 
+        '--disable-setuid-sandbox', 
         '--disable-dev-shm-usage',
-        '--blink-settings=imagesEnabled=false' // Tắt load ảnh trong trình duyệt để nhanh hơn
+        '--blink-settings=imagesEnabled=false'
       ]
     });
     
     const page = await browser.newPage();
 
-    // Chặn tài nguyên không cần thiết để tăng tốc
+    // Chặn tài nguyên thừa
     await page.setRequestInterception(true);
     page.on('request', (req: any) => {
-      const resourceType = req.resourceType();
-      if (['stylesheet', 'font', 'media', 'image'].includes(resourceType)) {
+      const type = req.resourceType();
+      if (['stylesheet', 'font', 'media', 'image'].includes(type)) {
         req.abort();
       } else {
         req.continue();
@@ -50,52 +53,65 @@ export async function fetchNewsContent(url: string) {
     });
 
     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36');
-    await page.setViewport({ width: 1280, height: 720 });
-
-    // Truy cập link báo
-    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
     
-    // Đợi 3s để load nội dung text
+    // Dùng networkidle0 để đợi trang load xong hết các redirect (chuyển hướng)
+    await page.goto(url, { waitUntil: 'networkidle0', timeout: 60000 });
     await new Promise(resolve => setTimeout(resolve, 3000)); 
 
     const html = await page.content();
     const $ = cheerio.load(html);
     
+    // Kiểm tra video
     if ($('video').length > 0 || $('iframe[src*="youtube"]').length > 0) {
       await browser.close();
       return { error: "Bài viết chứa video, tự động bỏ qua." };
     }
 
+    // Lấy nội dung text
     let content = '';
     $('article p, .content p, .detail-content p, .detail-cmain p, .singular-content p, p').each((i: number, el: any) => {
       content += $(el).text().trim() + '\n\n';
     });
 
-    // CẢI TIẾN: Ưu tiên lấy ảnh chuẩn từ thẻ meta của trang gốc
-    let rawImageUrl = 
-        $('meta[property="og:image"]').attr('content') || 
-        $('meta[property="twitter:image"]').attr('content') || 
-        $('article img').first().attr('src');
+    // --- BỘ LỌC ẢNH THÔNG MINH (CHỐNG 404) ---
+    let rawImageUrl = '';
+    
+    // Tìm tất cả ứng viên ảnh
+    const candidates = [
+        $('meta[property="og:image"]').attr('content'),
+        $('meta[property="twitter:image"]').attr('content'),
+        $('article img').first().attr('src'),
+        $('img').first().attr('src')
+    ];
 
-    await browser.close(); // Đóng trình duyệt trước khi tải ảnh để nhẹ máy
+    // Lọc bỏ những link ảnh nào chứa "google.com" (đây là nguyên nhân gây 404)
+    for (const img of candidates) {
+        if (img && !img.includes('google.com') && !img.includes('proxy')) {
+            rawImageUrl = img;
+            console.log("✅ Tìm thấy ảnh hợp lệ:", rawImageUrl);
+            break;
+        } else if (img) {
+            console.log("⚠️ Bỏ qua ảnh proxy của Google:", img);
+        }
+    }
 
-    // XỬ LÝ TẢI ẢNH BẰNG AXIOS (Không dùng page.goto)
+    await browser.close();
+
+    // XỬ LÝ TẢI ẢNH BẰNG AXIOS
     if (rawImageUrl) {
         try {
-            // Xử lý link tương đối
-            const imageUrl = new URL(rawImageUrl, url).href;
+            const finalImageUrl = new URL(rawImageUrl, url).href;
+            console.log(`📥 Đang tải ảnh về: ${finalImageUrl}`);
 
-            // Tải ảnh bằng axios với Header giả lập
-            const response = await axios.get(imageUrl, {
+            const response = await axios.get(finalImageUrl, {
                 responseType: 'arraybuffer',
                 headers: {
-                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0.0.0',
-                    'Referer': url
+                    'User-Agent': 'Mozilla/5.0',
+                    'Referer': url // Quan trọng: Báo cho server biết mình đến từ trang gốc
                 },
-                timeout: 10000
+                timeout: 15000
             });
 
-            // Tạo thư mục nếu chưa có
             if (!fs.existsSync('public/images/news')) {
                 fs.mkdirSync('public/images/news', { recursive: true });
             }
@@ -104,20 +120,23 @@ export async function fetchNewsContent(url: string) {
             const filePath = `public/images/news/${fileName}`;
             
             fs.writeFileSync(filePath, Buffer.from(response.data, 'binary'));
+            console.log(`💾 Đã lưu ảnh thành công: ${filePath}`);
             
             return { content, imageUrl: `/images/news/${fileName}` };
 
         } catch (err) {
-            console.error("❌ Không tải được ảnh gốc, bỏ qua:", err);
-            return { content, imageUrl: null }; // Vẫn trả về content dù ảnh lỗi
+            console.error("❌ Không tải được ảnh, nguyên nhân:", err);
+            return { content, imageUrl: null };
         }
+    } else {
+        console.warn("⚠️ Không tìm thấy ảnh nào không phải của Google.");
     }
 
     return { content, imageUrl: null };
     
   } catch (error: any) {
     if (browser) await browser.close();
-    console.error("❌ LỖI SCRAPER:", error?.message || error);
-    return { error: "Lỗi kết nối trình duyệt ảo hoặc web load quá lâu." };
+    console.error("❌ LỖI SCRAPER CHI TIẾT:", error?.message || error);
+    return { error: "Lỗi kết nối." };
   }
 }
