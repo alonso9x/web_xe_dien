@@ -84,12 +84,27 @@ async function run() {
       continue;
     }
 
-    const imgStatus = await checkImage(scrapedData.imageUrl);
+    // --- CẢI TIẾN: Gộp đường dẫn tương đối thành tuyệt đối ---
+    let imageUrl = scrapedData.imageUrl;
+    if (imageUrl && !imageUrl.startsWith('http')) {
+      try {
+        // Tự động ghép tên miền từ link gốc vào ảnh
+        imageUrl = new URL(imageUrl, news.link).href;
+      } catch (e) {
+        // Nếu fail thì giữ nguyên để checkImage xử lý
+      }
+    }
+
+    const imgStatus = await checkImage(imageUrl);
+    
+    // Cập nhật lại scrapedData với link đã chuẩn hóa
+    const finalScrapedData = { ...scrapedData, imageUrl: imageUrl };
+
     if (imgStatus.valid) {
-      healthyQueue.push({ ...news, ...scrapedData });
+      healthyQueue.push({ ...news, ...finalScrapedData });
     } else {
-      console.log(`⚠️ Bài "${news.title}" ảnh lỗi [${imgStatus.reason}], đẩy vào danh sách dự phòng.`);
-      fallbackQueue.push({ ...news, ...scrapedData });
+      console.log(`⚠️ Bài "${news.title}" ảnh lỗi [${imgStatus.reason}]. Link: ${imageUrl}, đẩy vào dự phòng.`);
+      fallbackQueue.push({ ...news, ...finalScrapedData });
     }
   }
 
