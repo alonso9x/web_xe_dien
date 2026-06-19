@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Clock, ArrowLeft, ArrowRight, Calendar } from "lucide-react";
 import fs from 'fs';
 import path from 'path';
+import FallbackImage from './FallbackImage';
 
 export const dynamic = 'force-dynamic';
 
@@ -83,15 +84,12 @@ export default async function NewsDetail({ params }: { params: any }) {
       </header>
 
       <div className="w-full h-[40vh] md:h-[60vh] relative bg-neutral-100">
-        <img 
-  src={imgUrl} 
-  alt={article.title} 
-  className="w-full h-full object-cover" 
-  onError={(e) => {
-    // Nếu ảnh lỗi, tự động thế bằng ảnh mặc định này
-    e.currentTarget.src = "https://xedienminhanh.vn/images/default-news.jpg"; 
-  }}
-/>
+        {/* ĐÃ THAY THẾ BẰNG FALLBACKIMAGE Ở ĐÂY */}
+        <FallbackImage 
+          src={imgUrl} 
+          alt={article.title} 
+          className="w-full h-full object-cover" 
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
       </div>
 
