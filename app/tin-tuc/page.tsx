@@ -41,14 +41,23 @@ async function getNewsData() {
     const rawItems = Array.isArray(data) ? data : [data];
     
     // Ép các trường lệch pha (imageUrl, createdAt) về cấu trúc giao diện cần tìm
-    return rawItems.map((item: any, index: number) => ({
-      id: item.id || `bai-viet-${index + 1}`,
-      category: item.category || "Hot Trend",
-      image: item.imageUrl || item.image || "/images/default-news.jpg",
-      date: item.createdAt ? new Date(item.createdAt).toLocaleDateString('vi-VN') : (item.date || "Vừa cập nhật"),
-      title: item.title || "Tin tức xe điện mới nhất",
-      excerpt: item.excerpt || ""
-    }));
+    return rawItems.map((item: any, index: number) => {
+      let finalImage = item.imageUrl || item.image || "/images/default-news.jpg";
+      
+      // SỬA LỖI ĐƯỜNG DẪN: Nếu thiếu gạch chéo ở đầu, tự động chèn vào để tránh lỗi URL tương đối
+      if (finalImage && !finalImage.startsWith('http') && !finalImage.startsWith('/')) {
+        finalImage = '/' + finalImage;
+      }
+
+      return {
+        id: item.id || `bai-viet-${index + 1}`,
+        category: item.category || "Hot Trend",
+        image: finalImage,
+        date: item.createdAt ? new Date(item.createdAt).toLocaleDateString('vi-VN') : (item.date || "Vừa cập nhật"),
+        title: item.title || "Tin tức xe điện mới nhất",
+        excerpt: item.excerpt || ""
+      };
+    });
   } catch (error) {
     console.error("Lỗi đồng bộ dữ liệu JSON:", error);
     return [];

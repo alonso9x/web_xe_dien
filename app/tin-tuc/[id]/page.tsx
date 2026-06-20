@@ -70,7 +70,12 @@ export default async function NewsDetail({ params }: { params: any }) {
     });
   };
 
-  const imgUrl = article.imageUrl || article.image || "/images/default-news.jpg";
+  let imgUrl = article.imageUrl || article.image || "/images/default-news.jpg";
+  // SỬA LỖI ĐƯỜNG DẪN TƯƠNG TỰ BÊN TRANG LIST
+  if (imgUrl && !imgUrl.startsWith('http') && !imgUrl.startsWith('/')) {
+    imgUrl = '/' + imgUrl;
+  }
+
   const dateStr = article.createdAt ? new Date(article.createdAt).toLocaleDateString('vi-VN') : (article.date || "Vừa cập nhật");
 
   return (

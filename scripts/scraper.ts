@@ -24,23 +24,27 @@ export async function getLatestNewsLinks(keyword: string) {
   }
 }
 
-// HÀM KIỂM TRA ẢNH "SẠCH" (Chống logo, icon, ảnh rác)
-function isValidImage(url: string | undefined): boolean {
+// HÀM KIỂM TRA ẢNH "SẠCH" ĐÃ ĐƯỢC NÂNG CẤP (Chống logo, icon, avatar tác giả)
+function isValidImage(url: string | undefined, className: string = '', alt: string = ''): boolean {
   if (!url) return false;
   const lowerUrl = url.toLowerCase();
+  const lowerClass = className.toLowerCase();
+  const lowerAlt = alt.toLowerCase();
   
   // Loại bỏ ảnh proxy của Google
   if (lowerUrl.includes('google.com') || lowerUrl.includes('proxy')) return false;
   
-  // Loại bỏ các định dạng rác và các từ khóa nhận diện logo/ảnh quảng cáo
+  // Loại bỏ các định dạng rác
   if (lowerUrl.includes('.svg') || lowerUrl.includes('.gif')) return false;
-  if (
-      lowerUrl.includes('logo') || 
-      lowerUrl.includes('icon') || 
-      lowerUrl.includes('banner') || 
-      lowerUrl.includes('avatar')
-  ) {
-      return false;
+  
+  // Danh sách đen từ khóa rác
+  const blacklist = ['logo', 'icon', 'banner', 'avatar', 'author', 'tac-gia', 'thumb'];
+  
+  for (const word of blacklist) {
+      // Nếu URL, Class hoặc Alt chứa từ khóa rác -> Loại ngay lập tức
+      if (lowerUrl.includes(word) || lowerClass.includes(word) || lowerAlt.includes(word)) {
+          return false;
+      }
   }
   
   return true;
@@ -95,10 +99,11 @@ export async function fetchNewsContent(url: string) {
       content += $(el).text().trim() + '\n\n';
     });
 
-    // --- BỘ LỌC ẢNH THÔNG MINH MỚI (CHỐNG LOGO, CHỐNG RÁC) ---
+    // --- BỘ LỌC ẢNH THÔNG MINH MỚI (ƯU TIÊN ẢNH SỐ 2) ---
     let rawImageUrl = '';
+    const validImages: string[] = [];
     
-    // 1. Ưu tiên tìm ảnh nằm TRONG khu vực nội dung bài viết trước
+    // 1. Quét tất cả ảnh nằm TRONG khu vực nội dung bài viết trước
     const contentAreaSelectors = [
       'article img', 
       '.detail-content img', 
@@ -109,16 +114,26 @@ export async function fetchNewsContent(url: string) {
       '.content img'
     ];
 
-    for (const selector of contentAreaSelectors) {
-      const imgEls = $(selector);
-      for (let i = 0; i < imgEls.length; i++) {
-        const src = $(imgEls[i]).attr('src') || $(imgEls[i]).attr('data-src');
-        if (isValidImage(src)) {
-          rawImageUrl = src as string;
-          break;
-        }
+    const joinedSelectors = contentAreaSelectors.join(', ');
+    
+    $(joinedSelectors).each((i: number, el: any) => {
+      const src = $(el).attr('src') || $(el).attr('data-src');
+      const className = $(el).attr('class') || '';
+      const alt = $(el).attr('alt') || '';
+      
+      // Nếu là ảnh sạch và chưa có trong mảng thì đẩy vào
+      if (isValidImage(src, className, alt) && !validImages.includes(src as string)) {
+          validImages.push(src as string);
       }
-      if (rawImageUrl) break;
+    });
+
+    // Lựa chọn ảnh ưu tiên: Lấy ảnh số 2, nếu không có thì lấy ảnh số 1
+    if (validImages.length >= 2) {
+        rawImageUrl = validImages[1]; 
+        console.log(`✅ Bài có nhiều ảnh, đã chọn ảnh thứ 2: ${rawImageUrl}`);
+    } else if (validImages.length === 1) {
+        rawImageUrl = validImages[0];
+        console.log(`✅ Bài chỉ có 1 ảnh sạch, đã chọn: ${rawImageUrl}`);
     }
 
     // 2. Nếu nội dung không có ảnh, vớt vát bằng ảnh meta (ảnh bìa lúc share Facebook)
@@ -126,6 +141,7 @@ export async function fetchNewsContent(url: string) {
         const ogImage = $('meta[property="og:image"]').attr('content') || $('meta[property="twitter:image"]').attr('content');
         if (isValidImage(ogImage)) {
             rawImageUrl = ogImage as string;
+            console.log(`✅ Không có ảnh nội dung, dùng ảnh Cover/Meta: ${rawImageUrl}`);
         }
     }
 
@@ -133,22 +149,24 @@ export async function fetchNewsContent(url: string) {
     if (!rawImageUrl) {
       $('img').each((i: number, el: any) => {
         const src = $(el).attr('src') || $(el).attr('data-src');
-        if (isValidImage(src)) {
+        const className = $(el).attr('class') || '';
+        const alt = $(el).attr('alt') || '';
+        
+        if (isValidImage(src, className, alt)) {
             rawImageUrl = src as string;
+            console.log(`✅ Vớt vát ảnh toàn trang: ${rawImageUrl}`);
             return false; // Dừng vòng lặp each
         }
       });
     }
 
-    if (rawImageUrl) {
-        console.log("✅ Tìm thấy ảnh hợp lệ:", rawImageUrl);
-    } else {
+    if (!rawImageUrl) {
         console.warn("⚠️ Không tìm thấy ảnh nào hợp lệ (hoặc toàn logo/rác).");
     }
 
     await browser.close();
 
-    // XỬ LÝ TẢI ẢNH BẰNG AXIOS
+    // XỬ LÝ TẢI ẢNH BẰNG AXIOS (Giữ nguyên 100%)
     if (rawImageUrl) {
         try {
             const finalImageUrl = new URL(rawImageUrl, url).href;
@@ -158,7 +176,7 @@ export async function fetchNewsContent(url: string) {
                 responseType: 'arraybuffer',
                 headers: {
                     'User-Agent': 'Mozilla/5.0',
-                    'Referer': url // Quan trọng: Báo cho server biết mình đến từ trang gốc
+                    'Referer': url 
                 },
                 timeout: 15000
             });
@@ -173,7 +191,6 @@ export async function fetchNewsContent(url: string) {
             fs.writeFileSync(filePath, Buffer.from(response.data, 'binary'));
             console.log(`💾 Đã lưu ảnh thành công: ${filePath}`);
             
-            // ĐÃ FIX: Thêm lại dấu "/" ở đầu để chống lỗi 404 đường dẫn tương đối trên Frontend
             return { content, imageUrl: `/images/news/${fileName}` };
 
         } catch (err) {
