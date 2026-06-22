@@ -6,6 +6,7 @@ import { Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
 import { Zap, ShieldCheck, BatteryCharging, Leaf, Star, ArrowRight, MapPin, Phone, Clock, MessageCircle, X, CheckCircle2, Loader2 } from "lucide-react";
 
+
 // --- CUSTOM ICONS ---
 const FacebookIcon = ({ size = 24 }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
@@ -56,6 +57,7 @@ export default function Home() {
   const filteredBikes = powellddBikes.filter(bike => filter === "all" ? true : bike.category === filter);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [formStatus, setFormStatus] = useState("idle");
   const [formData, setFormData] = useState({ name: "", phone: "", model: "Chưa xác định", note: "" });
 
@@ -112,14 +114,14 @@ export default function Home() {
     <main className={`min-h-screen bg-[#F4F4F6] text-neutral-800 ${elegantFont.className} overflow-x-hidden font-light relative`}>
       
       {/* 1. HEADER */}
-      <motion.header initial={{ y: -100 }} animate={{ y: 0 }} transition={{ duration: 0.8 }} className="fixed w-full top-0 bg-white/70 backdrop-blur-2xl z-50 border-b border-white shadow-sm">
+      {/* 1. HEADER */}
+      <motion.header initial={{ y: -100 }} animate={{ y: 0 }} transition={{ duration: 0.8 }} className="fixed w-full top-0 bg-white/80 backdrop-blur-2xl z-50 border-b border-white shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <motion.div whileHover={{ scale: 1.05 }} className="flex flex-col cursor-pointer">
             <h1 className="text-2xl font-semibold tracking-widest uppercase text-black leading-none">Minh Anh</h1>
             <span className="text-[10px] font-medium tracking-widest text-neutral-500 uppercase mt-1">E-Scooter</span>
           </motion.div>
           
-          {/* ĐÃ CẬP NHẬT ĐIỀU HƯỚNG BẰNG THẺ LINK CHUẨN */}
           <nav className="hidden lg:flex gap-10 text-[13px] font-semibold uppercase tracking-widest text-neutral-600">
             <Link href="/" className="hover:text-black transition-colors">Trang chủ</Link>
             <Link href="/#san-pham" className="hover:text-black transition-colors">Sản phẩm</Link>
@@ -127,10 +129,44 @@ export default function Home() {
             <Link href="/tin-tuc" className="hover:text-black transition-colors">Tin tức</Link>
           </nav>
 
-          <motion.button onClick={() => setIsModalOpen(true)} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="hidden md:flex items-center gap-2 bg-black text-white px-7 py-3 rounded-full text-sm font-semibold shadow-xl shadow-black/20">
-            Nhận tư vấn <ArrowRight size={16} />
-          </motion.button>
+          <div className="flex items-center gap-4">
+            <motion.button onClick={() => setIsModalOpen(true)} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="hidden md:flex items-center gap-2 bg-black text-white px-7 py-3 rounded-full text-sm font-semibold shadow-xl shadow-black/20">
+              Nhận tư vấn <ArrowRight size={16} />
+            </motion.button>
+            
+            {/* Hamburger Button Mobile */}
+            <button className="lg:hidden text-black p-2" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+              {isMobileMenuOpen ? <X size={24} /> : (
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/>
+                </svg>
+              )}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Menu Dropdown - Đã fix lỗi không hiển thị */}
+        <AnimatePresence>
+          {isMobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              className="lg:hidden absolute top-full left-0 w-full bg-white shadow-2xl border-b border-neutral-100 flex flex-col origin-top"
+            >
+              <div className="px-6 py-6 flex flex-col gap-4 text-[13px] font-semibold uppercase tracking-widest text-neutral-600">
+                <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors pb-3 border-b border-neutral-100">Trang chủ</Link>
+                <Link href="/#san-pham" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors pb-3 border-b border-neutral-100">Sản phẩm</Link>
+                <Link href="/#cong-nghe" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors pb-3 border-b border-neutral-100">Công nghệ</Link>
+                <Link href="/tin-tuc" onClick={() => setIsMobileMenuOpen(false)} className="hover:text-black transition-colors pb-3 border-b border-neutral-100">Tin tức</Link>
+                <button onClick={() => { setIsMobileMenuOpen(false); setIsModalOpen(true); }} className="md:hidden mt-2 bg-black text-white px-7 py-3 rounded-full text-sm font-semibold flex items-center justify-center gap-2 shadow-lg shadow-black/20">
+                  Nhận tư vấn <ArrowRight size={16} />
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </motion.header>
 
       {/* 2. HERO SECTION */}
