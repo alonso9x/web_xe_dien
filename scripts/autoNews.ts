@@ -5,7 +5,9 @@ import cron from 'node-cron';
 import { getLatestNewsLinks, fetchNewsContent } from './scraper';
 import { rewriteArticle } from './aiService';
 
-// HÀM 1: Tải ảnh từ báo về website của anh
+// ========================================================
+// ĐỒ CHƠI ĐỘC QUYỀN 1: Tải ảnh từ báo về website (Dùng Axios Stream)
+// ========================================================
 async function downloadImage(url: string, filename: string): Promise<boolean> {
   const imgDir = path.join(process.cwd(), 'public', 'images', 'news');
   if (!fs.existsSync(imgDir)) fs.mkdirSync(imgDir, { recursive: true });
@@ -22,7 +24,33 @@ async function downloadImage(url: string, filename: string): Promise<boolean> {
   });
 }
 
-// HÀM 2: Lưu bài viết vào Database (File JSON)
+// ========================================================
+// ĐỒ CHƠI TỪ TESTRUN 1: Hàm check ảnh remote có bị chặn bot không
+// ========================================================
+async function checkImage(url: string | null | undefined): Promise<{ valid: boolean; reason: string }> {
+  if (!url || typeof url !== 'string' || !url.startsWith('http') || url.length < 10) 
+    return { valid: false, reason: "URL sai/trống" };
+
+  try {
+    const response = await fetch(url, { 
+      method: 'HEAD',
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+        'Referer': new URL(url).origin,
+        'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
+      }
+    });
+    
+    if (response.ok) return { valid: true, reason: "OK" };
+    return { valid: false, reason: `HTTP Status ${response.status}` };
+  } catch (e: any) {
+    return { valid: false, reason: e.message || "Connection Failed" };
+  }
+}
+
+// ========================================================
+// ĐỒ CHƠI ĐỘC QUYỀN 2: Lưu bài viết vào Database chuẩn hệ thống chính
+// ========================================================
 function saveToDatabase(article: any) {
   const dbDir = path.join(process.cwd(), 'src', 'data');
   if (!fs.existsSync(dbDir)) fs.mkdirSync(dbDir, { recursive: true });
@@ -30,82 +58,214 @@ function saveToDatabase(article: any) {
   const dbPath = path.join(dbDir, 'newsData.json');
   let newsList = [];
   if (fs.existsSync(dbPath)) {
-    newsList = JSON.parse(fs.readFileSync(dbPath, 'utf-8'));
+    try {
+      newsList = JSON.parse(fs.readFileSync(dbPath, 'utf-8'));
+    } catch (e) {
+      newsList = [];
+    }
   }
   
   newsList.unshift(article); // Đẩy bài mới tinh lên đầu trang
+  if (newsList.length > 50) newsList.length = 50; // Giới hạn kho dữ liệu 50 bài như bản testrun
+  
   fs.writeFileSync(dbPath, JSON.stringify(newsList, null, 2), 'utf-8');
 }
 
-// HÀM 3: LUỒNG CHẠY CHÍNH
+// ========================================================
+// HÀM 3: LUỒNG CHẠY CHÍNH (ĐỒNG BỘ 100% HOẠT ĐỘNG CỦA TESTRUN)
+// ========================================================
 async function runAutoNews() {
-  console.log(`\n[${new Date().toLocaleString('vi-VN')}] 🚀 KHỞI ĐỘNG BOT CÀO TIN...`);
+  console.log(`\n[${new Date().toLocaleString('vi-VN')}] 🚀 KHỞI ĐỘNG BOT CÀO TIN TỰ ĐỘNG CHUYÊN SÂU...`);
   
-  // 1. Lấy danh sách 5 bài báo mới nhất
-  const newsList = await getLatestNewsLinks("xe máy điện");
-  if (!newsList || newsList.length === 0) {
-    return console.log("❌ Không tìm thấy bài báo mới.");
+  const targetKeywords = [
+    "Powelldd",
+    "TMT e-moto",
+    "Aima tech",
+    "kiến thức sử dụng xe máy điện",
+    "mẹo bảo dưỡng xe điện",
+    "kinh nghiệm đi xe máy điện"
+  ];
+
+  let newsList: any[] = [];
+
+  // 1. Quét tin tức gom bão theo các từ khóa của bản testrun
+  for (const kw of targetKeywords) {
+    console.log(`🔍 Đang quét tin tức cho từ khóa: "${kw}"...`);
+    const links = await getLatestNewsLinks(kw);
+    if (links && links.length > 0) {
+      newsList = newsList.concat(links.slice(0, 2));
+    }
   }
 
-  // 2. Bốc bài đầu tiên (vị trí số 0) ra để chạy
-  const firstNews = newsList[0];
-  if (!firstNews || !firstNews.link) {
-    return console.log("❌ Bài báo đầu tiên bị lỗi link hoặc trống.");
+  // Lọc trùng lặp link
+  newsList = newsList.filter((value, index, self) =>
+    self.findIndex(t => t.link === value.link) === index
+  );
+
+  if (newsList.length === 0) {
+    console.log("❌ Không tìm thấy bài viết mới nào thuộc các chủ đề trên.");
+    return;
   }
 
-  // 3. Truyền đúng link của bài đầu tiên vào hàm cào tin
-  const scrapedData = await fetchNewsContent(firstNews.link);
-  if (!scrapedData) return console.log("❌ Không bóc được nội dung.");
-  
-  // Bỏ qua nếu có video hoặc bài quá ngắn
-  if (scrapedData.error) return console.log(`⏭️ ${scrapedData.error}`);
-  if (!scrapedData.content || scrapedData.content.length < 200) return console.log("❌ Nội dung rác/quá ngắn.");
+  let healthyQueue: any[] = [];
+  let fallbackQueue: any[] = [];
 
-  console.log(`🧠 Đang nhờ Gemini xào nấu...`);
-  // Truyền đúng tiêu đề của bài đầu tiên vào AI
-  const aiResult = await rewriteArticle(scrapedData.content, firstNews.title || "");
+  console.log(`\n📌 Tổng cộng gom được ${newsList.length} bài. Đang tiến hành sàng lọc chất lượng...`);
 
-  if (aiResult) {
-    let localImagePath = "https://images.unsplash.com/photo-1593941707882-a5bba14938c7?q=80&w=800&auto=format&fit=crop"; 
+  // 2. Phân loại bài viết vào các rổ hàng xịn và dự phòng
+  for (const news of newsList) {
+    const scrapedData = await fetchNewsContent(news.link);
+    if (!scrapedData || scrapedData.error || !scrapedData.content || scrapedData.content.length < 200) {
+      console.log(`⏭️ Bỏ qua: ${scrapedData?.error || "Không bóc được dữ liệu hoặc bài quá ngắn"}`);
+      continue;
+    }
 
-    // Tải ảnh về máy chủ
-    if (scrapedData.imageUrl) {
+    let imageUrl = scrapedData.imageUrl;
+    if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.includes('images/')) {
       try {
-        const imageName = `news-${Date.now()}.jpg`;
-        console.log(`📸 Đang tải ảnh gốc về máy: ${scrapedData.imageUrl}`);
-        await downloadImage(scrapedData.imageUrl, imageName);
-        localImagePath = `/images/news/${imageName}`; // Đường dẫn chuẩn trên web
+        imageUrl = new URL(imageUrl, news.link).href;
+      } catch (e) {}
+    }
+
+    const finalScrapedData = { ...scrapedData, imageUrl: imageUrl };
+
+    // Phân loại dựa trên trạng thái ảnh
+    if (imageUrl && imageUrl.includes('images/')) {
+        healthyQueue.push({ ...news, ...finalScrapedData });
+    } else {
+        const imgStatus = await checkImage(imageUrl);
+        if (imgStatus.valid) {
+            healthyQueue.push({ ...news, ...finalScrapedData });
+        } else {
+            console.log(`⚠️ Bài "${news.title}" ảnh lỗi [${imgStatus.reason}]. Đẩy vào dự phòng.`);
+            fallbackQueue.push({ ...news, ...finalScrapedData });
+        }
+    }
+  }
+
+  // 3. Trộn ngẫu nhiên rổ hàng xịn (Thuật toán Fisher-Yates chuẩn testrun)
+  if (healthyQueue.length > 0) {
+    console.log(`\n🎲 Tìm thấy ${healthyQueue.length} bài hàng xịn. Tiến hành trộn ngẫu nhiên để chọn bài...`);
+    for (let i = healthyQueue.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [healthyQueue[i], healthyQueue[j]] = [healthyQueue[j], healthyQueue[i]];
+    }
+  }
+
+  let success = false;
+  let finalItem: any = null;
+  let finalAiResult: any = null;
+
+  // Xử lý AI với danh sách đã trộn ngẫu nhiên
+  for (let i = 0; i < healthyQueue.length; i++) {
+    const item = healthyQueue[i];
+    console.log(`\n🎲 [Lượt chọn ngẫu nhiên] Đang xử lý bài [${i + 1}/${healthyQueue.length} - Hàng xịn]: ${item.title}`);
+    
+    const aiResult = await rewriteArticle(item.content, item.title);
+    if (aiResult) {
+      finalItem = item;
+      finalAiResult = aiResult;
+      success = true;
+      break;
+    }
+  }
+
+  // Nếu hàng xịn tạch hết thì cứu bốc thăm từ hàng dự phòng
+  if (!success && fallbackQueue.length > 0) {
+    console.log("\n🚨 Hàng xịn đã tạch hết, đang bốc thăm cứu trợ 1 bài từ hàng dự phòng...");
+    const randomIdx = Math.floor(Math.random() * fallbackQueue.length);
+    const item = fallbackQueue[randomIdx];
+    
+    console.log(`➡️ Đang thử cứu bài: ${item.title}`);
+    const aiResult = await rewriteArticle(item.content, item.title);
+    if (aiResult) {
+      finalItem = item;
+      finalAiResult = aiResult;
+      success = true;
+    }
+  }
+
+  // 4. Nếu xử lý thành công, tiến hành tải ảnh thực tế và lưu chuẩn form autonews
+  if (success && finalItem && finalAiResult) {
+    const contentString = Array.isArray(finalAiResult.content) 
+        ? finalAiResult.content.join('\n\n') 
+        : String(finalAiResult.content);
+
+    const finalTitle = finalAiResult.newTitle || finalItem.title;
+
+    // Đọc DB hiện tại ở src/data để kiểm tra trùng bài
+    const dbPath = path.join(process.cwd(), 'src', 'data', 'newsData.json');
+    let currentData: any[] = [];
+    if (fs.existsSync(dbPath)) {
+      try {
+        currentData = JSON.parse(fs.readFileSync(dbPath, 'utf8'));
       } catch (e) {
-        console.log("⚠️ Lỗi tải ảnh, dùng ảnh mặc định.");
+        currentData = [];
       }
     }
 
-    const contentString = Array.isArray(aiResult.content) ? aiResult.content.join('\n\n') : String(aiResult.content);
+    const isDuplicate = currentData.some(item => item.title === finalTitle);
+    
+    if (isDuplicate) {
+      console.log(`❌ BỎ QUA: Bài viết "${finalTitle}" đã tồn tại trong database hệ thống!`);
+      return;
+    }
 
-    // Đóng gói dữ liệu chuẩn form tin tức
+    // --- XỬ LÝ LƯU ẢNH VÀO WEB (Tích hợp thông minh Tải ảnh của Autonews + Logic Dân Trí của Testrun) ---
+    let localImagePath = "https://images.unsplash.com/photo-1593941707882-a5bba14938c7?q=80&w=800&auto=format&fit=crop"; 
+    let finalImage = finalItem.imageUrl;
+    
+    if (finalItem.link && finalItem.link.includes('dantri.com.vn')) {
+        console.log("🛑 Nguồn Dân Trí: Chủ động bỏ qua ảnh gốc, dùng mặc định.");
+    } else if (!finalImage || finalImage.trim() === "") {
+        console.log("⚠️ Không có ảnh hợp lệ, dùng ảnh mặc định!");
+    } else if (finalImage.includes('images/')) {
+        // Nếu là ảnh có sẵn từ local scraper
+        localImagePath = finalImage.startsWith('/') ? finalImage : '/' + finalImage;
+        console.log(`✅ Sử dụng đường dẫn ảnh local: ${localImagePath}`);
+    } else if (finalImage.startsWith('http')) {
+        // Nếu là ảnh remote, tiến hành tải về máy chủ (Đồ chơi gốc của autonews)
+        try {
+          const imageName = `news-${Date.now()}.jpg`;
+          console.log(`📸 Đang tải ảnh gốc về máy chủ: ${finalImage}`);
+          await downloadImage(finalImage, imageName);
+          localImagePath = `/images/news/${imageName}`; // Đường dẫn chuẩn hiển thị trên web
+          console.log(`✅ Tải và lưu ảnh thành công: ${localImagePath}`);
+        } catch (e) {
+          console.log("⚠️ Lỗi tải ảnh từ báo gốc, fallback về ảnh mặc định.");
+        }
+    }
+
+    // Đóng gói đúng cấu trúc trường dữ liệu (Schema) của autonews cũ
     const finalArticle = {
       id: Date.now(),
-      title: aiResult.newTitle,
+      title: finalTitle,
       date: new Date().toLocaleDateString('vi-VN'), 
       category: "Điểm tin",
       image: localImagePath,
-      excerpt: aiResult.excerpt,
+      excerpt: finalAiResult.excerpt,
       fullContent: contentString
     };
 
     saveToDatabase(finalArticle);
-    console.log("✅ HOÀN TẤT: BÀI VIẾT VÀ ẢNH ĐÃ ĐƯỢC LƯU LÊN WEBSITE!\n");
+    console.log("\n==============================================");
+    console.log("✅ HOÀN TẤT: BÀI VIẾT NGẪU NHIÊN ĐÃ ĐƯỢC ĐĂNG TỰ ĐỘNG LÊN WEB!");
+    console.log("==============================================\n");
+
+  } else {
+    console.log("\n❌ Kết thúc tiến trình: Không có bài nào mới hoặc lỗi AI.");
   }
 }
 
 // ----------------------------------------------------
-// THIẾT LẬP HẸN GIỜ (CRON JOB)
+// ĐỒ CHƠI ĐỘC QUYỀN 3: THIẾT LẬP HẸN GIỜ CHẠY NGẦM (CRON JOB)
 // ----------------------------------------------------
 console.log("🟢 HỆ THỐNG AUTO-NEWS ĐÃ KÍCH HOẠT. ĐANG CHỜ ĐẾN 07:00 SÁNG...");
 
-// Chạy định kỳ vào 07:00 sáng mỗi ngày theo giờ Việt Nam
+// Chạy định kỳ vào đúng 07:00 sáng mỗi ngày theo giờ Việt Nam
 cron.schedule('0 7 * * *', () => {
   runAutoNews();
 }, {
   timezone: "Asia/Ho_Chi_Minh"
 });
+runAutoNews();
