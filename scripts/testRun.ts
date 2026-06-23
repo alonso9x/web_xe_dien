@@ -3,6 +3,20 @@ import { rewriteArticle } from './aiService';
 import * as fs from 'fs';
 import path from 'path';
 
+// ========================================================
+// HÀM CHỌN NGẪU NHIÊN CTA (Đa dạng hóa SEO & Chuyển đổi)
+// ========================================================
+function getRandomCTA(): string {
+  const ctaTemplates = [
+    `\n\n---\n💡 **Bạn đang tìm kiếm xe điện bền bỉ và chất lượng?** Khám phá ngay các mẫu xe mới nhất tại [Xe Điện Minh Anh](https://xedienminhanh.vn) để nhận ưu đãi hấp dẫn hôm nay!`,
+    `\n\n---\n🛠️ **Xe máy điện tiết kiệm - an toàn - hiện đại.** Đến [Xe Điện Minh Anh](https://xedienminhanh.vn) để trải nghiệm dịch vụ bảo hành chính hãng và hỗ trợ kỹ thuật tận tâm nhất.`,
+    `\n\n---\n🎯 **Lựa chọn thông minh cho di chuyển đô thị.** Xem ngay bảng giá chi tiết và các mẫu xe điện hot nhất thị trường tại [Xe Điện Minh Anh](https://xedienminhanh.vn).`,
+    `\n\n---\n⚡ **Gia nhập cộng đồng di chuyển xanh cùng Xe Điện Minh Anh.** Liên hệ ngay [tại đây](https://xedienminhanh.vn) để nhận tư vấn miễn phí dòng xe phù hợp với nhu cầu của bạn.`,
+    `\n\n---\n💰 **Mua xe điện giá tốt - Nhận quà liền tay.** Đừng bỏ lỡ cơ hội sở hữu chiếc xe ưng ý tại [Xe Điện Minh Anh](https://xedienminhanh.vn) với chính sách trả góp cực ưu đãi.`
+  ];
+  return ctaTemplates[Math.floor(Math.random() * ctaTemplates.length)];
+}
+
 // Hàm tự động đẻ ra ID siêu chuẩn từ tiêu đề
 function generateSlug(text: string) {
   return text.toLowerCase()
@@ -21,7 +35,7 @@ async function checkImage(url: string | null | undefined): Promise<{ valid: bool
     const response = await fetch(url, { 
       method: 'HEAD',
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/126.0.0.0',
         'Referer': new URL(url).origin,
         'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8'
       }
@@ -150,9 +164,12 @@ async function run() {
   }
 
   if (success && finalItem && finalAiResult) {
-    const contentString = Array.isArray(finalAiResult.content) 
+    const rawContent = Array.isArray(finalAiResult.content) 
         ? finalAiResult.content.join('\n\n') 
         : String(finalAiResult.content);
+    
+    // CHÈN CTA NGẪU NHIÊN VÀO CUỐI BÀI
+    const contentString = rawContent + getRandomCTA();
 
     console.log("\n==============================================");
     console.log("🎉 KẾT QUẢ AI ĐÃ VIẾT XONG.");
