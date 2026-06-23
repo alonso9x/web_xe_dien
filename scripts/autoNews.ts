@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import axios from 'axios';
 import cron from 'node-cron';
+import { exec } from 'child_process'; // Thêm mới để chạy lệnh terminal
 import { getLatestNewsLinks, fetchNewsContent } from './scraper';
 import { rewriteArticle } from './aiService';
 
@@ -268,6 +269,17 @@ async function runAutoNews() {
     };
 
     saveToDatabase(finalArticle);
+    
+    // Tự động chạy tạo sitemap sau khi lưu bài thành công
+    console.log("🔄 Đang chạy script cập nhật Sitemap...");
+    exec('npx ts-node scripts/generateSitemap.ts', (error, stdout, stderr) => {
+        if (error) {
+            console.error(`⚠️ Lỗi khi tự động cập nhật Sitemap: ${error.message}`);
+        } else {
+            console.log("✅ Sitemap đã được cập nhật thành công.");
+        }
+    });
+
     console.log("\n==============================================");
     console.log("✅ HOÀN TẤT: BÀI VIẾT NGẪU NHIÊN ĐÃ ĐƯỢC ĐĂNG TỰ ĐỘNG LÊN WEB!");
     console.log("==============================================\n");
