@@ -7,6 +7,20 @@ import { getLatestNewsLinks, fetchNewsContent } from './scraper';
 import { rewriteArticle } from './aiService';
 
 // ========================================================
+// HÀM BỔ TRỢ: CTA NGẪU NHIÊN (Tăng chuyển đổi)
+// ========================================================
+function getRandomCTA(): string {
+  const ctaTemplates = [
+    `\n\n---\n💡 **Bạn đang tìm kiếm xe điện bền bỉ và chất lượng?** Khám phá ngay các mẫu xe mới nhất tại [Xe Điện Minh Anh](https://xedienminhanh.vn) để nhận ưu đãi hấp dẫn hôm nay!`,
+    `\n\n---\n🛠️ **Xe máy điện tiết kiệm - an toàn - hiện đại.** Đến [Xe Điện Minh Anh](https://xedienminhanh.vn) để trải nghiệm dịch vụ bảo hành chính hãng và hỗ trợ kỹ thuật tận tâm nhất.`,
+    `\n\n---\n🎯 **Lựa chọn thông minh cho di chuyển đô thị.** Xem ngay bảng giá chi tiết và các mẫu xe điện hot nhất thị trường tại [Xe Điện Minh Anh](https://xedienminhanh.vn).`,
+    `\n\n---\n⚡ **Gia nhập cộng đồng di chuyển xanh cùng Xe Điện Minh Anh.** Liên hệ ngay [tại đây](https://xedienminhanh.vn) để nhận tư vấn miễn phí dòng xe phù hợp với nhu cầu của bạn.`,
+    `\n\n---\n💰 **Mua xe điện giá tốt - Nhận quà liền tay.** Đừng bỏ lỡ cơ hội sở hữu chiếc xe ưng ý tại [Xe Điện Minh Anh](https://xedienminhanh.vn) với chính sách trả góp cực ưu đãi.`
+  ];
+  return ctaTemplates[Math.floor(Math.random() * ctaTemplates.length)];
+}
+
+// ========================================================
 // ĐỒ CHƠI ĐỘC QUYỀN 1: Tải ảnh từ báo về website (Dùng Axios Stream)
 // ========================================================
 async function downloadImage(url: string, filename: string): Promise<boolean> {
@@ -210,9 +224,12 @@ async function runAutoNews() {
 
   // 4. Nếu xử lý thành công, tiến hành tải ảnh thực tế và lưu chuẩn form autonews
   if (success && finalItem && finalAiResult) {
-    const contentString = Array.isArray(finalAiResult.content) 
+    // --- XỬ LÝ NỘI DUNG VÀ CHÈN CTA NGẪU NHIÊN ---
+    const rawContent = Array.isArray(finalAiResult.content) 
         ? finalAiResult.content.join('\n\n') 
         : String(finalAiResult.content);
+        
+    const contentString = rawContent + getRandomCTA(); // <--- CHÈN CTA VÀO ĐÂY
 
     const finalTitle = finalAiResult.newTitle || finalItem.title;
 
@@ -290,7 +307,7 @@ async function runAutoNews() {
 }
 
 // ----------------------------------------------------
-// ĐỒ CHƠI ĐỘC QUYỀN 3: THIẾT LẬP HẸN GIỜ CHẠY NGẦM (CRON JOB)
+// ĐỒ CHƠI ĐỘC QUYỀN 3: THIẾT LẬP HỆN GIỜ CHẠY NGẦM (CRON JOB)
 // ----------------------------------------------------
 console.log("🟢 HỆ THỐNG AUTO-NEWS ĐÃ KÍCH HOẠT. ĐANG CHỜ ĐẾN 07:00 SÁNG...");
 
