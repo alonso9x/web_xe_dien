@@ -93,9 +93,6 @@ async function runAutoNews() {
   console.log(`\n[${new Date().toLocaleString('vi-VN')}] 🚀 KHỞI ĐỘNG BOT CÀO TIN TỰ ĐỘNG CHUYÊN SÂU...`);
   
   const targetKeywords = [
-    "Powelldd",
-    "TMT e-moto",
-    "Aima tech",
     "kiến thức sử dụng xe máy điện",
     "mẹo bảo dưỡng xe điện",
     "kinh nghiệm đi xe máy điện"
