@@ -52,9 +52,6 @@ async function run() {
   console.log("🚀 BẮT ĐẦU QUÁ TRÌNH TỰ ĐỘNG CÀO TIN CHUYÊN SÂU...");
   
   const targetKeywords = [
-    "Powelldd",
-    "TMT e-moto",
-    "Aima tech",
     "kiến thức sử dụng xe máy điện",
     "mẹo bảo dưỡng xe điện",
     "kinh nghiệm đi xe máy điện"
