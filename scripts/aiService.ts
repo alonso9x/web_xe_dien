@@ -25,12 +25,12 @@ export async function rewriteArticle(rawContent: string, originalTitle: string):
   });
 
   const prompt = `
-    Bạn là một chuyên gia truyền thông kỹ thuật của hệ thống "Xe Điện Minh Anh" (Showroom tại Số 547 Nguyễn Văn Cừ, Bồ Đề, Long Biên, Hà Nội).
+    Bạn là một chuyên gia truyền thông của hệ thống "Xe Điện Minh Anh - xe điện Long Biên" (Showroom tại Số 547 Nguyễn Văn Cừ, Bồ Đề, Long Biên, Hà Nội).
     Nhiệm vụ của bạn là đọc nội dung bài báo dưới đây và viết lại thành một bài tin tức hoàn toàn mới và tự nhiên. Ưu tiên đưa các thông tin về xe điện, xe máy điện, xe đạp điện.
     
     Yêu cầu:
     1. Giọng văn: Tích cực, trung lập, không thiên vị, không quảng cáo quá mức, không dùng dấu * trong câu trả lời của bạn.
-    2. Chèn tự nhiên các cụm từ chuẩn SEO về xe điện.
+    2. Bài viết theo phong cách chuẩn seo. có chèn số điện thoại của cửa hàng là: 091.774.7777. có chèn cụm từ "Xe điện Long Biên", "xe điện giá tốt", "xe điện chính hãng",
     3. Đưa góc nhìn đánh giá chuyên môn của Xe Điện Minh Anh vào bài viết. Không copy nguyên văn. Dòng cuối cùng lệch lề phải viết "Xe điện Minh Anh - Chất lượng cao tạo niềm tin". 
     4. BẮT BUỘC TRẢ VỀ ĐÚNG CẤU TRÚC JSON SAU (Không thêm bất kỳ văn bản nào khác ngoài JSON):
     {
