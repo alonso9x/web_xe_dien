@@ -119,7 +119,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <motion.div whileHover={{ scale: 1.05 }} className="flex flex-col cursor-pointer">
             <h1 className="text-2xl font-semibold tracking-widest uppercase text-black leading-none">Minh Anh</h1>
-            <span className="text-[10px] font-medium tracking-widest text-neutral-500 uppercase mt-1">E-Scooter</span>
+            <span className="text-[10px] font-medium tracking-widest text-neutral-500 uppercase mt-1">Xe điện Long Biên</span>
           </motion.div>
           
           <nav className="hidden lg:flex gap-10 text-[13px] font-semibold uppercase tracking-widest text-neutral-600">
@@ -194,7 +194,7 @@ export default function Home() {
             ĐỊNH HÌNH <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-300 to-neutral-500 italic font-light pr-2">PHONG CÁCH SỐNG</span>
           </motion.h2>
           <motion.p variants={fadeUp} className="text-lg md:text-xl font-light mb-12 text-neutral-300 drop-shadow-lg tracking-wide max-w-2xl mx-auto">
-            Hệ thống phân phối các dòng xe máy điện Powelldd, TMT, Vinfast....chính hãng hàng đầu Việt Nam.
+            Hệ thống xe điện Minh Anh - xe điện Long Biên chuyên phân phối các dòng xe máy điện Powelldd, TMT, Vinfast....chính hãng hàng đầu Việt Nam.
           </motion.p>
           <motion.a variants={fadeUp} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} href="#san-pham" className="inline-flex items-center gap-3 bg-white text-black px-12 py-5 rounded-full font-semibold text-sm uppercase tracking-widest shadow-[0_0_40px_rgba(255,255,255,0.3)]">
             Khám phá ngay <ArrowRight size={18} />
@@ -339,9 +339,9 @@ export default function Home() {
           <h3 className="text-4xl md:text-5xl font-semibold uppercase mb-16 text-center tracking-widest">Khách hàng <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 font-light italic">nói gì?</span></h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              { name: "Anh Tuấn", bike: "Dimoon", text: "Thiết kế xe tinh tế, chạy êm ru ngoài phố cổ. Mình chạy cả tuần mới phải sạc 1 lần, rất ưng ý dịch vụ tại Minh Anh." },
-              { name: "Chị Hạnh", bike: "Hazel", text: "Mua cho con gái đi học, màu hồng ngoài đời nhìn sang hơn trong ảnh. Xe nhẹ, dễ dắt, phanh an toàn. Chấm 10 điểm!" },
-              { name: "Bạn Đức", bike: "Wespan pro", text: "Thích form dáng cổ điển này từ lâu, qua showroom chạy thử phát là chốt cọc luôn. Giá cả hợp lý so với chất lượng hoàn thiện." }
+              { name: "Anh Tuấn", bike: "Dimoon", text: "Thiết kế xe tinh tế, chạy êm ru ngoài phố cổ. Mình chạy cả tuần mới phải sạc 1 lần, rất ưng ý dịch vụ tại xe điện Minh Anh - Long Biên." },
+              { name: "Chị Hạnh", bike: "Hazel", text: "Mua cho con gái đi học, màu hồng ngoài đời nhìn sang hơn trong ảnh. Xe nhẹ, dễ dắt, phanh an toàn. Chấm 10 điểm cho xe điện Minh Anh - Long Biên!" },
+              { name: "Bạn Đức", bike: "Wespan pro", text: "Thích form dáng cổ điển này từ lâu, qua showroom chạy thử phát là chốt cọc luôn. Giá cả hợp lý so với chất lượng hoàn thiện. Cảm ơn xe điện Minh Anh - Long Biên!" }
             ].map((review, idx) => (
               <motion.div key={idx} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.2 }} viewport={{ once: true }} className="bg-neutral-900 p-10 rounded-[2rem] border border-neutral-800">
                 <div className="flex gap-1 text-yellow-400 mb-6">
@@ -366,7 +366,7 @@ export default function Home() {
             <span>TRẢI NGHIỆM</span>
             <span>ĐẲNG CẤP</span>
           </h2>
-          <p className="text-lg font-light mb-12 text-neutral-500">Đến ngay showroom hoặc để lại số điện thoại để nhận voucher ưu đãi lên đến 2 triệu đồng.</p>
+          <p className="text-lg font-light mb-12 text-neutral-500">Đến ngay showroom Xe điện Minh Anh - Xe điện Long Biên hoặc để lại số điện thoại để nhận voucher ưu đãi lên đến 2 triệu đồng.</p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <button 
               onClick={() => setIsModalOpen(true)}
@@ -389,7 +389,7 @@ export default function Home() {
               <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
                 <span className="text-xs font-semibold tracking-[0.3em] uppercase text-neutral-400 block mb-3">Ghé thăm chúng tôi</span>
                 <h3 className="text-3xl md:text-4xl font-semibold uppercase tracking-widest text-black mb-6">SHOWROOM <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-black via-neutral-600 to-neutral-400 font-light italic">MINH ANH</span></h3>
-                <p className="text-neutral-500 font-light leading-relaxed mb-8">Không gian trưng bày hiện đại, đầy đủ các phiên bản và màu sắc mới nhất của Powelldd, TMT, Vinfast.... Kính mời quý khách đến trải nghiệm thực tế và lái thử xe trực tiếp.</p>
+                <p className="text-neutral-500 font-light leading-relaxed mb-8">Không gian trưng bày hiện đại tại xe điện Minh Anh - xe điện Long Biên, đầy đủ các phiên bản và màu sắc mới nhất của Powelldd, TMT, Vinfast.... Kính mời quý khách đến trải nghiệm thực tế và lái thử xe trực tiếp.</p>
               </motion.div>
 
               <div className="space-y-6 text-neutral-700 font-light text-sm">
@@ -398,7 +398,7 @@ export default function Home() {
                   <div>
                     <p className="font-semibold text-black uppercase tracking-wider text-xs mb-1">Địa chỉ</p>
                     <a href="https://www.google.com/maps/search/?api=1&query=547+Nguyễn+Văn+Cừ,+Bồ+Đề,+Long+Biên,+Hà+Nội" target="_blank" rel="noreferrer" className="hover:text-blue-600 transition-colors">
-                      Số 547 Nguyễn Văn Cừ, Bồ Đề, Long Biên, Hà Nội
+                      Số 547 Nguyễn Văn Cừ, Bồ Đề, Long Biên (cũ), Hà Nội
                     </a>
                   </div>
                 </div>
@@ -431,8 +431,8 @@ export default function Home() {
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 border-b border-neutral-800 pb-16 mb-8">
           <div className="lg:col-span-5">
             <h2 className="text-4xl font-semibold mb-4 uppercase tracking-widest leading-none">Minh Anh</h2>
-            <span className="text-sm text-neutral-500 tracking-[0.4em] uppercase block mb-6">E-Scooter</span>
-            <p className="text-neutral-400 text-sm leading-relaxed font-light max-w-sm mb-8">Nâng tầm phong cách di chuyển đô thị. Hệ thống phân phối các dòng xe điện Powelldd, TMT, Vinfast....chính hãng hàng đầu Việt Nam.</p>
+            <span className="text-sm text-neutral-500 tracking-[0.4em] uppercase block mb-6">Xe điện Long Biên</span>
+            <p className="text-neutral-400 text-sm leading-relaxed font-light max-w-sm mb-8">Nâng tầm phong cách di chuyển đô thị. Hệ thống xe điện Minh Anh - xe điện Long Biên phân phối các dòng xe điện Powelldd, TMT, Vinfast....chính hãng hàng đầu Việt Nam.</p>
             <div className="flex gap-4">
               <a href="https://www.facebook.com/profile.php?id=61585209534176" target="_blank" rel="noreferrer" className="bg-neutral-800 p-3 rounded-full hover:bg-blue-600 hover:text-white transition-all shadow-sm">
                 <FacebookIcon size={20} />
@@ -464,7 +464,7 @@ export default function Home() {
           </div>
         </div>
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-neutral-500 text-[10px] font-medium uppercase tracking-[0.2em]">
-          <p>© 2026 MINH ANH E-SCOOTER. ALL RIGHTS RESERVED.</p>
+          <p>© 2026 Xe điện Minh Anh - Xe điện Long Biên. ALL RIGHTS RESERVED.</p>
         </div>
       </footer>
 
@@ -501,7 +501,7 @@ export default function Home() {
                     <CheckCircle2 size={64} strokeWidth={1.5} />
                   </motion.div>
                   <h3 className="text-2xl font-bold mb-2">Đăng ký thành công!</h3>
-                  <p className="text-neutral-500">Cảm ơn anh/chị. Đội ngũ tư vấn viên của Minh Anh sẽ gọi lại trong thời gian sớm nhất.</p>
+                  <p className="text-neutral-500">Cảm ơn anh/chị. Đội ngũ tư vấn viên của Minh Anh - xe điện Long Biên sẽ gọi lại trong thời gian sớm nhất.</p>
                 </div>
               ) : (
                 <>
