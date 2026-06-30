@@ -54,6 +54,7 @@ async function run() {
   const targetKeywords = [
     "kiến thức sử dụng xe máy điện",
     "mẹo bảo dưỡng xe điện",
+    "Bí kíp chọn xe điện",
     "kinh nghiệm đi xe máy điện"
   ];
 
