@@ -10,14 +10,14 @@ const montserrat = Montserrat({
 
 // BỘ TỪ KHÓA VÀ THÔNG TIN CHUẨN SEO
 export const metadata: Metadata = {
-  title: "Xe Điện Minh Anh | Đại Lý Phân Phối Powelldd Chính Hãng",
+  title: "Xe Điện Long Biên | Xe Điện Minh Anh – Đại Lý Chính Hãng",
   description: "Hệ thống phân phối Minh Anh chuyên phân phối các dòng xe máy điện, xe đạp điện, xe trợ lực điện với các thương hiệu Powelldd, TMT, Vinfast....",
-  keywords: "xe điện minh anh, xe điện học sinh, xe máy điện hà nội, xe điện Long Biên",
+  keywords: "xe điện minh anh, xe điện học sinh, xe máy điện hà nội, xe điện Long Biên,xedienminhanh, xe điện hà nội, xe đạp điện long biên, xe đạp điện hà nội",
   openGraph: {
-    title: "Xe Điện Minh Anh | Phong Cách Di Chuyển Mới",
+    title: "Xe Điện Long Biên | Xe Điện Minh Anh – Đại Lý Chính Hãng",
     description: "Trải nghiệm các mẫu xe điện Neo-Retro đỉnh cao tại 547 Nguyễn Văn Cừ.",
     url: "https://xedienminhanh.vn", 
-    siteName: "Xe Điện Minh Anh",
+    siteName: "Xe Điện Minh Anh - xe điện Long Biên chính hãng",
     images: [
       {
         url: "/images/banner/banner-3.png", // Ảnh hiển thị khi anh share link qua Zalo, Facebook
