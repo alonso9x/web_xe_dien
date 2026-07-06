@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
+import Script from "next/script"; // Đã bổ sung thư viện Script của Next.js
 import "./globals.css";
 
 const montserrat = Montserrat({ 
@@ -38,7 +39,28 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi" className="scroll-smooth">
-      <body className={montserrat.className}>{children}</body>
+      <body className={montserrat.className}>
+        {/* ĐOẠN MÃ GOOGLE TAG ĐÃ ĐƯỢC CHÈN CHUẨN CHO NEXT.JS */}
+        <Script
+          strategy="afterInteractive"
+          src={`https://www.googletagmanager.com/gtag/js?id=AW-18262483267`}
+        />
+        <Script
+          id="google-ads-tag"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'AW-18262483267');
+            `,
+          }}
+        />
+        {/* HẾT ĐOẠN MÃ GOOGLE TAG */}
+
+        {children}
+      </body>
     </html>
   );
 }
