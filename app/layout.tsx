@@ -18,7 +18,7 @@ export const metadata: Metadata = {
     title: "Xe Điện Long Biên | Xe Điện Minh Anh – Đại Lý Chính Hãng",
     description: "Trải nghiệm các mẫu xe điện Neo-Retro đỉnh cao tại 547 Nguyễn Văn Cừ.",
     url: "https://xedienminhanh.vn", 
-    siteName: "Xe Điện Minh Anh - xe điện Long Biên chính hãng",
+    siteName: "Xe Điện Minh Anh",
     images: [
       {
         url: "/images/banner/banner-3.png", // Ảnh hiển thị khi anh share link qua Zalo, Facebook
@@ -40,24 +40,30 @@ export default function RootLayout({
   return (
     <html lang="vi" className="scroll-smooth">
       <body className={montserrat.className}>
-        {/* ĐOẠN MÃ GOOGLE TAG ĐÃ ĐƯỢC CHÈN CHUẨN CHO NEXT.JS */}
+        
+        {/* ĐOẠN MÃ GOOGLE GỘP CHUNG (ANALYTICS + ADS) */}
         <Script
           strategy="afterInteractive"
-          src={`https://www.googletagmanager.com/gtag/js?id=AW-18262483267`}
+          src={`https://www.googletagmanager.com/gtag/js?id=G-11WYGY4N4Z`}
         />
         <Script
-          id="google-ads-tag"
+          id="google-tags"
           strategy="afterInteractive"
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
+              
+              // Khai báo cho Google Analytics đo lường web
+              gtag('config', 'G-11WYGY4N4Z');
+
+              // Khai báo cho Google Ads chạy quảng cáo
               gtag('config', 'AW-18262483267');
             `,
           }}
         />
-        {/* HẾT ĐOẠN MÃ GOOGLE TAG */}
+        {/* HẾT ĐOẠN MÃ GOOGLE */}
 
         {children}
       </body>
