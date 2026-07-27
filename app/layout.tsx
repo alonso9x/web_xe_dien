@@ -41,6 +41,21 @@ export default function RootLayout({
     <html lang="vi" className="scroll-smooth">
       <body className={montserrat.className}>
         
+        {/* ĐÂY LÀ "BẰNG CHỨNG THÉP" ÉP GOOGLE NHẬN DIỆN TÊN TRANG WEB */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              "name": "Xe Điện Minh Anh",
+              "alternateName": "Minh Anh",
+              "url": "https://xedienminhanh.vn/"
+            })
+          }}
+        />
+        {/* HẾT KHAI BÁO TÊN TRANG WEB */}
+
         {/* ĐOẠN MÃ GOOGLE GỘP CHUNG (ANALYTICS + ADS) */}
         <Script
           strategy="afterInteractive"
