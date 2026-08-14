@@ -32,7 +32,7 @@ export const metadata: Metadata = {
       "Đại lý phân phối xe máy điện, xe đạp điện chính hãng tại Long Biên, Hà Nội. Trải nghiệm các mẫu xe điện thời thượng, chất lượng cao tại 547 Nguyễn Văn Cừ.",
     images: [
       {
-        url: "/images/banner/banner-3.png",
+        url: "/images/banner/banner-seo(3).png",
         width: 1200,
         height: 630,
         alt: "Xe Điện Minh Anh",
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
     title: "Xe Điện Long Biên | Xe Điện Minh Anh – Đại Lý Chính Hãng",
     description:
       "Đại lý phân phối xe máy điện, xe đạp điện chính hãng tại Long Biên, Hà Nội.",
-    images: ["/images/banner/banner-3.png"],
+    images: ["/images/banner/banner-seo(3).png"],
   },
 };
 
@@ -57,8 +57,6 @@ const jsonLd = {
       "url": "https://xedienminhanh.vn/",
       "name": "Xe Điện Minh Anh",
       "alternateName": [
-        "Xe Điện Long Biên",
-        "Minh Anh E-Scooter",
         "xedienminhanh.vn"
       ],
       "publisher": {
@@ -66,17 +64,34 @@ const jsonLd = {
       }
     },
     {
-      "@type": "AutoDealer",
+      "@type": "MotorcycleDealer",
       "@id": "https://xedienminhanh.vn/#store",
-      "name": "Xe Điện Minh Anh",
+      "name": "Xe điện Minh Anh - Xe điện Long Biên",
       "url": "https://xedienminhanh.vn/",
       "telephone": "0917747777",
+      "priceRange": "10.000.000đ - 20.500.000đ",
+      "hasMap": "https://maps.app.goo.gl/TMF9s4ZiED3EdCGm9",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://xedienminhanh.vn/favicon.ico"
+      },
+      "image": [
+        "https://xedienminhanh.vn/images/banner/banner-seo(1).png",
+        "https://xedienminhanh.vn/images/banner/banner-seo(2).png",
+        "https://xedienminhanh.vn/images/banner/banner-seo(3).png",
+        "https://xedienminhanh.vn/images/banner/banner-seo(4).png"
+      ],
       "address": {
         "@type": "PostalAddress",
         "streetAddress": "547 Nguyễn Văn Cừ, Bồ Đề",
         "addressLocality": "Long Biên",
         "addressRegion": "Hà Nội",
         "addressCountry": "VN"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 21.049524992943706,
+        "longitude": 105.88297443388772
       },
       "openingHoursSpecification": {
         "@type": "OpeningHoursSpecification",
@@ -91,7 +106,11 @@ const jsonLd = {
         ],
         "opens": "08:00",
         "closes": "21:00"
-      }
+      },
+      "sameAs": [
+        "https://www.facebook.com/profile.php?id=61585209534176",
+        "https://www.tiktok.com/@powelldd.long.bien"
+      ]
     }
   ]
 };
