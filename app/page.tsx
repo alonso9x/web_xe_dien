@@ -4,10 +4,8 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence, useScroll, useTransform, Variants } from "framer-motion";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
-import { Zap, ShieldCheck, BatteryCharging, Leaf, Star, ArrowRight, MapPin, Phone, Clock, MessageCircle, X, CheckCircle2, Loader2 } from "lucide-react";
+import { Zap, ShieldCheck, BatteryCharging, Ruler, Gauge, Weight, ArrowRight, MapPin, Phone, Clock, X, CheckCircle2, Loader2, Star } from "lucide-react";
 
-
-// --- CUSTOM ICONS ---
 const FacebookIcon = ({ size = 24 }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
 );
@@ -16,7 +14,6 @@ const MessengerIcon = ({ size = 24 }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.14 2 11.25c0 2.91 1.5 5.5 3.94 7.22.18.13.3.34.3.56v2.45c0 .4.46.62.77.38l2.84-2.19c.2-.15.44-.21.68-.18 1.13.16 2.29.25 3.47.25 5.523 0 10-4.14 10-9.25S17.523 2 12 2zm1.09 12.35l-2.48-2.65c-.2-.22-.55-.26-.8-.09l-3.23 2.17c-.36.24-.8-.2-.55-.57l3.66-5.59c.2-.3.57-.38.88-.19l2.48 1.55c.2.13.45.1.62-.07l3.52-3.35c.34-.32.84.14.58.53l-3.8 5.76c-.2.31-.57.4-.88.2z"/></svg>
 );
 
-// Icon Tiktok dạng nét viền (outline)
 const TiktokIcon = ({ size = 24 }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path>
@@ -31,19 +28,20 @@ const elegantFont = Plus_Jakarta_Sans({
   display: "swap"
 });
 
-// THỨ TỰ: wespan pro, dimoon, walkmen, shine, fancy, hazel, sweetea
 const powellddBikes = [
-  { id: "wespan-pro", name: "Wespan pro", price: "20.500.000 VNĐ", range: "70 km", speed: "47 km/h", colors: ["Đen", "Trắng", "Vàng"], tagline: "Thiết kế vượt thời gian", coverImage: "/images/powelldd/wespan-pro/xam-bac-khi.png", signatureHex: "#D97706", category: "cao-cap" },
-  { id: "dimoon", name: "Dimoon", price: "18.990.000 VNĐ", range: "90 km", speed: "48 km/h", colors: ["Đen vũ trụ", "Trắng", "Xanh titan"], tagline: "Biểu tượng thời thượng mới", coverImage: "/images/powelldd/dimoon/trang-bang-suong.png", signatureHex: "#1E3A8A", category: "cao-cap" },
-  { id: "walkmen", name: "Walkmen", price: "13.800.000 VNĐ", range: "60 km", speed: "45 km/h", colors: ["Đen", "Trắng", "Vàng"], tagline: "Tự do không sợ hãi", coverImage: "/images/powelldd/walkmen/trang-storm.png", signatureHex: "#EA580C", category: "tieu-chuan" },
-  { id: "shine", name: "Shine", price: "14.990.000 VNĐ", range: "70 km", speed: "49 km/h", colors: ["Cam đỏ", "Đen", "Hồng"], tagline: "Shine - Go to school", coverImage: "/images/powelldd/shine/trang-hong.png", signatureHex: "#0D9488", category: "tieu-chuan" },
+  { id: "wespan-pro", name: "Wespan pro", price: "20.500.000 VNĐ", range: "80 km", speed: "47 km/h", colors: ["Đen", "Trắng", "Vàng"], tagline: "Thiết kế vượt thời gian", coverImage: "/images/powelldd/wespan-pro/xam-bac-khi.png", signatureHex: "#D97706", category: "cao-cap" },
+  { id: "dimoon", name: "Dimoon", price: "17.990.000 VNĐ", range: "100 km", speed: "49 km/h", colors: ["Đen vũ trụ", "Trắng", "Xanh titan"], tagline: "Biểu tượng thời thượng mới", coverImage: "/images/powelldd/dimoon/trang-bang-suong.png", signatureHex: "#1E3A8A", category: "cao-cap" },
   { id: "fancy", name: "Fancy", price: "17.990.000 VNĐ", range: "80 km", speed: "45 km/h", colors: ["Đen", "Trắng", "Xám"], tagline: "Phong cách Italia", coverImage: "/images/powelldd/fancy/den.png", signatureHex: "#DC2626", category: "cao-cap" },
-  { id: "hazel", name: "Hazel", price: "14.990.000 VNĐ", range: "70 km", speed: "37 km/h", colors: ["Hồng", "Trắng", "Xanh"], tagline: "Ngọt ngào tỏa sáng", coverImage: "/images/powelldd/hazel/hong-dao.png", signatureHex: "#DB2777", category: "tieu-chuan" },
-  { id: "sweetea", name: "Sweetea", price: "13.800.000 VNĐ", range: "70 km", speed: "35 km/h", colors: ["Kem", "Vàng", "Xám"], tagline: "Thanh xuân ngọt ngào", coverImage: "/images/powelldd/sweetea/kem-tra-sua.png", signatureHex: "#B45309", category: "tieu-chuan" }
+  { id: "shine", name: "Shine pro", price: "14.990.000 VNĐ", range: "70 km", speed: "25 km/h", colors: ["Cam đỏ", "Đen", "Hồng"], tagline: "Shine pro - Go to school", coverImage: "/images/powelldd/shine-pro/hong-blush.png", signatureHex: "#0D9488", category: "tieu-chuan" },
+  { id: "hazel", name: "Hazel", price: "14.490.000 VNĐ", range: "70 km", speed: "37 km/h", colors: ["Hồng", "Trắng", "Xanh"], tagline: "Ngọt ngào tỏa sáng", coverImage: "/images/powelldd/hazel/hong-dao.png", signatureHex: "#DB2777", category: "tieu-chuan" },
+  { id: "dina", name: "Dina", price: "14.490.000 VNĐ", range: "80 km", speed: "40 km/h", colors: ["Hồng Blush", "Trắng Frost", "Bạc Mist", "Xám Urban", "Đen Phantom"], tagline: "Thông minh & Thanh lịch", coverImage: "/images/powelldd/dina/hong-blush.png", signatureHex: "#F472B6", category: "tieu-chuan" },
+  { id: "walkmen", name: "Walkmen", price: "13.800.000 VNĐ", range: "70 km", speed: "45 km/h", colors: ["Đen", "Trắng", "Vàng"], tagline: "Tự do không sợ hãi", coverImage: "/images/powelldd/walkmen/trang-storm.png", signatureHex: "#EA580C", category: "tieu-chuan" },
+  { id: "sweetea", name: "Sweetea", price: "13.800.000 VNĐ", range: "70 km", speed: "35 km/h", colors: ["Kem", "Vàng", "Xám"], tagline: "Thanh xuân ngọt ngào", coverImage: "/images/powelldd/sweetea/kem-tra-sua.png", signatureHex: "#B45309", category: "tieu-chuan" },
+  { id: "eiko", name: "Eiko", price: "11.990.000 VNĐ", range: "60 km", speed: "32 km/h", colors: ["Trắng Ice", "Xanh Mint", "Đỏ Fire", "Xám Silver", "Đen Neon"], tagline: "Nhỏ gọn linh hoạt", coverImage: "/images/powelldd/eiko/do-fire.png", signatureHex: "#EF4444", category: "tieu-chuan" }
 ];
 
 const techSlides = [
-  { img: "/images/cong-nghe/ac-quy.jpg", title: "Hệ thống thu hồi năng lượng thông minh", desc: "Chuyển hóa động năng thành điện năng | Tự động sạc khi trượt, xuống dốc, phanh | Gia tăng quãng đường di chuyển." },
+  { img: "/images/cong-nghe/ac-quy.jpg", title: "Hệ thống thu hồi năng lượng thông minh", desc: "Chuyển hóa động năng thành điện năng | Tự động sạc khi trượt, xuống dốc, phanh | Gia gia quãng đường di chuyển." },
   { img: "/images/cong-nghe/dong-co.jpg", title: "Đột phá vượt bậc trong phát triển động cơ", desc: "Tối ưu hiệu suất | Giảm thiểu tiếng ồn | Tin cậy tuyệt đối." },
   { img: "/images/cong-nghe/bo-dieu-khien.jpg", title: "Mang đến trải nghiệm lái an toàn và mạnh mẽ", desc: "Kết cấu ổn định vượt trội | Chiến lược điều khiển tiên tiến | Khả năng điều khiển chính xác | Tầm hoạt động xa hơn | Khả năng tương thích hoàn hảo." },
   { img: "/images/cong-nghe/lop-khang-luc.jpg", title: "Tối đa hóa quãng đường di chuyển", desc: "Đèn chiếu sáng led tiêu thụ ít điện năng | Lốp giảm kháng lực lăn | Thiết kế tối ưu khí động học | Dây dẫn điện trở thấp." }
@@ -65,7 +63,7 @@ export default function Home() {
     "/images/banner/banner-1.png",
     "/images/banner/banner-2.png",
     "/images/banner/banner-3.png",
-    "/images/banner/png.jpg" 
+    "/images/banner/banner-4.jpg" 
   ];
   const [currentBanner, setCurrentBanner] = useState(0);
   const [currentTech, setCurrentTech] = useState(0);
@@ -83,10 +81,6 @@ export default function Home() {
     }, 4000); 
     return () => clearInterval(techInterval);
   }, []);
-
-  const { scrollY } = useScroll();
-  const yHeroBg = useTransform(scrollY, [0, 1000], [0, 300]);
-  const opacityHeroText = useTransform(scrollY, [0, 500], [1, 0]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -113,8 +107,6 @@ export default function Home() {
   return (
     <main className={`min-h-screen bg-[#F4F4F6] text-neutral-800 ${elegantFont.className} overflow-x-hidden font-light relative`}>
       
-      {/* 1. HEADER */}
-      {/* 1. HEADER */}
       <motion.header initial={{ y: -100 }} animate={{ y: 0 }} transition={{ duration: 0.8 }} className="fixed w-full top-0 bg-white/80 backdrop-blur-2xl z-50 border-b border-white shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <motion.div whileHover={{ scale: 1.05 }} className="flex flex-col cursor-pointer">
@@ -134,7 +126,6 @@ export default function Home() {
               Nhận tư vấn <ArrowRight size={16} />
             </motion.button>
             
-            {/* Hamburger Button Mobile */}
             <button className="lg:hidden text-black p-2" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
               {isMobileMenuOpen ? <X size={24} /> : (
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -145,7 +136,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Mobile Menu Dropdown - Đã fix lỗi không hiển thị */}
         <AnimatePresence>
           {isMobileMenuOpen && (
             <motion.div
@@ -169,40 +159,53 @@ export default function Home() {
         </AnimatePresence>
       </motion.header>
 
-      {/* 2. HERO SECTION */}
-      <section className="relative w-full h-[100svh] flex items-center justify-center bg-black overflow-hidden">
-        <motion.div style={{ y: yHeroBg }} className="absolute inset-0 z-0 mt-[72px]">
-          <AnimatePresence mode="popLayout">
-            <motion.img 
-              key={currentBanner}
-              initial={{ opacity: 0 }} animate={{ opacity: 0.6 }} exit={{ opacity: 0 }}
-              transition={{ duration: 1.5, ease: "easeInOut" }}
-              src={bannerImages[currentBanner]} alt={`Banner ${currentBanner + 1}`} 
-              className="w-full h-full object-cover scale-105 absolute top-0 left-0" 
-              onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1558981806-ec527fa84c39?q=80&w=2070&auto=format&fit=crop"; }} 
-            />
-          </AnimatePresence>
-          <div className="absolute inset-0 bg-gradient-to-t from-[#F4F4F6] via-black/50 to-transparent z-10"></div>
-        </motion.div>
-        
-        <motion.div style={{ opacity: opacityHeroText }} variants={stagger} initial="hidden" animate="show" className="relative z-20 text-center text-white px-4 max-w-5xl mt-20">
-          <motion.div variants={fadeUp} className="inline-block px-4 py-1.5 rounded-full border border-white/30 backdrop-blur-md mb-6">
-            <span className="text-xs font-semibold tracking-[0.3em] uppercase text-neutral-200">Kỷ nguyên di chuyển xanh</span>
+      <section className="pt-32 pb-16 px-6 max-w-[1400px] mx-auto flex flex-col items-center">
+        <motion.div variants={stagger} initial="hidden" animate="show" className="text-center max-w-4xl mx-auto mb-12 mt-8">
+          <motion.div variants={fadeUp} className="inline-block px-5 py-2 rounded-full border border-neutral-200 bg-white shadow-sm mb-6">
+            <span className="text-xs font-bold tracking-[0.3em] uppercase text-black">Kỷ nguyên di chuyển xanh</span>
           </motion.div>
-          {/* Đã thêm pr-2 vào dòng PHONG CÁCH SỐNG để chữ G không bị lẹm */}
-          <motion.h2 variants={fadeUp} className="text-5xl md:text-7xl font-semibold mb-6 tracking-tighter leading-[1.1] drop-shadow-2xl">
-            ĐỊNH HÌNH <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-white via-neutral-300 to-neutral-500 italic font-light pr-2">PHONG CÁCH SỐNG</span>
+          <motion.h2 variants={fadeUp} className="text-5xl md:text-7xl font-semibold mb-6 tracking-tighter leading-[1.1] text-black drop-shadow-sm">
+            ĐỊNH HÌNH <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-neutral-800 to-neutral-400 italic font-light pr-2">PHONG CÁCH SỐNG</span>
           </motion.h2>
-          <motion.p variants={fadeUp} className="text-lg md:text-xl font-light mb-12 text-neutral-300 drop-shadow-lg tracking-wide max-w-2xl mx-auto">
+          <motion.p variants={fadeUp} className="text-lg md:text-xl font-medium mb-8 text-neutral-600 tracking-wide max-w-2xl mx-auto leading-relaxed">
             Hệ thống xe điện Minh Anh - xe điện Long Biên chuyên phân phối các dòng xe máy điện Powelldd, TMT, Vinfast....chính hãng hàng đầu Việt Nam.
           </motion.p>
-          <motion.a variants={fadeUp} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} href="#san-pham" className="inline-flex items-center gap-3 bg-white text-black px-12 py-5 rounded-full font-semibold text-sm uppercase tracking-widest shadow-[0_0_40px_rgba(255,255,255,0.3)]">
+          <motion.a variants={fadeUp} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} href="#san-pham" className="inline-flex items-center gap-3 bg-black text-white px-12 py-5 rounded-full font-semibold text-sm uppercase tracking-widest shadow-xl shadow-black/20">
             Khám phá ngay <ArrowRight size={18} />
           </motion.a>
         </motion.div>
+
+        <motion.div 
+          initial={{ opacity: 0, y: 40 }} 
+          animate={{ opacity: 1, y: 0 }} 
+          transition={{ duration: 0.8, delay: 0.4 }} 
+          className="relative w-full aspect-square sm:aspect-[4/3] md:aspect-video lg:aspect-[16/7] rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl shadow-neutral-300/60 bg-neutral-100 border-4 border-white"
+        >
+          <AnimatePresence mode="popLayout">
+            <motion.img 
+              key={currentBanner}
+              initial={{ opacity: 0, scale: 1.02 }} 
+              animate={{ opacity: 1, scale: 1 }} 
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1.2, ease: "easeInOut" }}
+              src={bannerImages[currentBanner]} 
+              alt={`Banner ${currentBanner + 1}`} 
+              className="w-full h-full object-contain bg-neutral-100 absolute top-0 left-0" 
+              onError={(e) => { e.currentTarget.src = "https://images.unsplash.com/photo-1558981806-ec527fa84c39?q=80&w=2070&auto=format&fit=crop"; }} 
+            />
+          </AnimatePresence>
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-20 bg-black/40 px-5 py-2.5 rounded-full backdrop-blur-md">
+            {bannerImages.map((_, idx) => (
+              <button 
+                key={idx} 
+                onClick={() => setCurrentBanner(idx)}
+                className={`h-2.5 rounded-full transition-all duration-500 ${currentBanner === idx ? 'bg-white w-10' : 'bg-white/50 w-2.5 hover:bg-white/80'}`}
+              />
+            ))}
+          </div>
+        </motion.div>
       </section>
 
-      {/* 3. SCROLLING TICKER */}
       <div className="w-full bg-black py-4 border-y border-neutral-800 overflow-hidden flex whitespace-nowrap">
         <motion.div animate={{ x: ["0%", "-50%"] }} transition={{ ease: "linear", duration: 35, repeat: Infinity }} className="flex text-white font-semibold text-sm tracking-[0.2em] uppercase">
           {[...Array(10)].map((_, i) => (
@@ -216,7 +219,6 @@ export default function Home() {
         </motion.div>
       </div>
 
-      {/* 4. DANH SÁCH SẢN PHẨM */}
       <section id="san-pham" className="max-w-7xl mx-auto px-6 pb-20 pt-24">
         <div className="mb-16 text-center flex flex-col items-center">
           <h3 className="text-4xl md:text-5xl font-semibold uppercase mb-6 tracking-widest">Bộ sưu tập <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-black to-neutral-400 font-light italic">Powelldd</span></h3>
@@ -266,7 +268,6 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* 5. CÔNG NGHỆ - 3D COVERFLOW SLIDER */}
       <section id="cong-nghe" className="py-24 bg-white border-y border-neutral-100 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6">
           <div className="mb-12 text-center flex flex-col items-center">
@@ -333,7 +334,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 6. TESTIMONIALS */}
       <section className="py-32 bg-black text-white relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <h3 className="text-4xl md:text-5xl font-semibold uppercase mb-16 text-center tracking-widest">Khách hàng <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500 font-light italic">nói gì?</span></h3>
@@ -358,10 +358,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 7. CTA & NÚT MỞ MODAL */}
       <section className="py-32 bg-white text-black text-center px-6 border-b border-neutral-100">
         <motion.div initial={{ scale: 0.95, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} transition={{ duration: 0.6 }} viewport={{ once: true }} className="max-w-4xl mx-auto">
-          {/* Đã thêm flex flex-col gap-y-4 md:gap-y-6 để tách dòng trên mobile */}
           <h2 className="text-4xl md:text-6xl font-semibold mb-8 tracking-widest uppercase flex flex-col gap-y-4 md:gap-y-6">
             <span>TRẢI NGHIỆM</span>
             <span>ĐẲNG CẤP</span>
@@ -381,7 +379,6 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* 8. SHOWROOM & GOOGLE MAPS */}
       <section id="showroom" className="py-24 bg-[#F4F4F6] border-t border-neutral-200">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -426,7 +423,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 9. FOOTER */}
       <footer id="lien-he" className="bg-black text-white pt-24 pb-10 px-6 border-t-8 border-neutral-900">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 border-b border-neutral-800 pb-16 mb-8">
           <div className="lg:col-span-5">
@@ -468,9 +464,7 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* --- CỤM NÚT LIÊN HỆ NỔI (KÈM MESSENGER) --- */}
       <div className="fixed bottom-6 right-6 z-[900] flex flex-col gap-5">
-        {/* Nút Zalo (Thay ảnh thật) */}
         <div className="relative w-14 h-14 group">
           <span className="absolute inset-0 rounded-full bg-[#0068FF] animate-ping opacity-60 group-hover:opacity-0 transition-opacity duration-300"></span>
           <motion.a href="https://zalo.me/0917747777" target="_blank" rel="noreferrer" animate={{ rotate: [0, -15, 15, -15, 15, 0, 0, 0, 0, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut", delay: 0 }} className="relative flex items-center justify-center w-full h-full rounded-full shadow-xl shadow-[#0068FF]/50 hover:scale-110 transition-transform overflow-hidden bg-white">
@@ -478,7 +472,6 @@ export default function Home() {
           </motion.a>
         </div>
 
-        {/* Nút Messenger */}
         <div className="relative w-14 h-14 group">
           <span className="absolute inset-0 rounded-full bg-[#0084FF] animate-ping opacity-60 group-hover:opacity-0 transition-opacity duration-300" style={{ animationDelay: '0.5s' }}></span>
           <motion.a href="https://m.me/61585209534176" target="_blank" rel="noreferrer" animate={{ rotate: [0, -15, 15, -15, 15, 0, 0, 0, 0, 0] }} transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }} className="relative flex items-center justify-center w-full h-full bg-gradient-to-tr from-[#00C6FF] to-[#0072FF] text-white rounded-full shadow-xl shadow-blue-500/50 hover:scale-110 transition-transform">
@@ -487,7 +480,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* MODAL FORM */}
       <AnimatePresence>
         {isModalOpen && (
           <div className="fixed inset-0 z-[9999] flex items-center justify-center px-4">

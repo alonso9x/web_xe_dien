@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
 import { ArrowLeft, Zap, BatteryCharging, ShieldCheck, Ruler, Gauge, Weight, Check, MapPin, Phone, Clock, MessageCircle } from "lucide-react";
+import ImageSlider from "@/components/ImageSlider";
 
 // --- CUSTOM ICONS ---
 const FacebookIcon = ({ size = 24 }) => (
@@ -42,8 +43,8 @@ const elegantFont = Plus_Jakarta_Sans({
 const dimoonData = {
   name: "Dimoon",
   tagline: "Biểu tượng thời thượng mới",
-  price: "18.990.000 VNĐ",
-  signatureHex: "#B45309", // Đổi sang tone Hổ phách/Vàng Cinematic (Amber-700)
+  price: "17.990.000 VNĐ",
+  signatureHex: "#B45309",
   description: "Powelldd Dimoon mang đến ngôn ngữ thiết kế tương lai, phá vỡ mọi quy chuẩn của dòng xe điện đô thị truyền thống. Với những đường bo tròn tinh tế kết hợp cùng cụm đèn LED matrix sắc sảo, Dimoon không chỉ là phương tiện di chuyển mà còn là món trang sức công nghệ khẳng định cá tính của bạn trên mọi cung đường.",
   colors: [
     { name: "Đen vũ trụ", hex: "#1A1A1A", img: "/images/powelldd/dimoon/den-vu-tru.png" },
@@ -53,8 +54,8 @@ const dimoonData = {
   specs: [
     { icon: <Zap size={20} strokeWidth={1.5}/>, label: "Động cơ", value: "1000W - Bứt tốc mạnh mẽ" },
     { icon: <BatteryCharging size={20} strokeWidth={1.5}/>, label: "Pin/Ắc quy", value: "60V-22.3Ah Graphene" },
-    { icon: <Ruler size={20} strokeWidth={1.5}/>, label: "Quãng đường", value: "90 km / 1 lần sạc" },
-    { icon: <Gauge size={20} strokeWidth={1.5}/>, label: "Vận tốc tối đa", value: "48 km/h" },
+    { icon: <Ruler size={20} strokeWidth={1.5}/>, label: "Quãng đường", value: "100 km / 1 lần sạc" },
+    { icon: <Gauge size={20} strokeWidth={1.5}/>, label: "Vận tốc tối đa", value: "49 km/h" },
     { icon: <Weight size={20} strokeWidth={1.5}/>, label: "Tải trọng", value: "Lên đến 180 kg" },
     { icon: <ShieldCheck size={20} strokeWidth={1.5}/>, label: "Kháng nước", value: "Chuẩn IP67 an toàn tuyệt đối" }
   ]
@@ -71,27 +72,26 @@ const featureImages = [
   "/images/vehicles/dimoon/Ride-your-mood-2.png"
 ];
 
+// --- ĐÃ FIX ĐƯỜNG DẪN ẢNH KHÔNG CÓ DẤU CÁCH ---
+const galleryImages = Array.from({ length: 10 }, (_, i) => `/images/vehicles/dimoon/gallery/anh(${i + 1}).jpg`);
+
 export default function DimoonDetail() {
   const [activeColor, setActiveColor] = useState(dimoonData.colors[0]);
 
-  // HÀM XỬ LÝ VUỐT (SLIDE) ĐỔI MÀU (Thêm mới cho Dimoon)
   const handleDragEnd = (event: any, info: any) => {
-    const swipeThreshold = 50; // Khoảng cách vuốt tối thiểu
+    const swipeThreshold = 50; 
     const currentIndex = dimoonData.colors.findIndex(c => c.name === activeColor.name);
 
     if (info.offset.x < -swipeThreshold) {
-      // Vuốt sang trái -> Sang ảnh tiếp theo
       const nextIndex = (currentIndex + 1) % dimoonData.colors.length;
       setActiveColor(dimoonData.colors[nextIndex]);
     } else if (info.offset.x > swipeThreshold) {
-      // Vuốt sang phải -> Về ảnh trước đó
       const prevIndex = (currentIndex - 1 + dimoonData.colors.length) % dimoonData.colors.length;
       setActiveColor(dimoonData.colors[prevIndex]);
     }
   };
 
   return (
-    // Nền tổng thể: Trắng kem (Cream) ngả vàng Cinematic
     <main className={`min-h-screen bg-[#FDFBF7] text-amber-950 ${elegantFont.className} font-light selection:bg-amber-200 selection:text-amber-900`}>
       
       {/* HEADER VINTAGE */}
@@ -108,18 +108,15 @@ export default function DimoonDetail() {
         </div>
       </header>
 
-      {/* HERO SECTION - CINEMATIC LAYOUT */}
+      {/* HERO SECTION */}
       <section className="pt-28 pb-20 px-6 max-w-7xl mx-auto min-h-[90vh] flex flex-col lg:flex-row items-center gap-16">
-        {/* Khung ảnh xe bên trái */}
         <div className="w-full lg:w-3/5 relative">
-          {/* Hào quang vàng vintage */}
           <motion.div 
             animate={{ backgroundColor: activeColor.hex }}
             transition={{ duration: 0.8 }}
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] rounded-full opacity-20 blur-[80px] -z-10 mix-blend-multiply"
           ></motion.div>
           
-          {/* Nền khung ảnh xe: Gradient Vàng Sepia */}
           <div className="w-full aspect-[4/3] lg:aspect-square bg-gradient-to-br from-[#FFFDF9] to-[#F5EEDC] rounded-[3rem] p-10 flex items-center justify-center border-2 border-amber-100 shadow-[0_20px_50px_-12px_rgba(180,83,9,0.15)] relative overflow-hidden">
             <AnimatePresence mode="wait">
               <motion.img 
@@ -130,11 +127,11 @@ export default function DimoonDetail() {
                 transition={{ duration: 0.4, ease: "easeOut" }}
                 src={activeColor.img} 
                 alt={`Xe điện Dimoon màu ${activeColor.name}`} 
-                className="w-full h-full object-contain drop-shadow-2xl z-10 cursor-grab active:cursor-grabbing" // Cập nhật class vuốt
-                drag="x" // Bật tính năng kéo vuốt dọc theo trục X
+                className="w-full h-full object-contain drop-shadow-2xl z-10 cursor-grab active:cursor-grabbing"
+                drag="x"
                 dragConstraints={{ left: 0, right: 0 }}
                 dragElastic={0.2}
-                onDragEnd={handleDragEnd} // Kích hoạt đổi màu
+                onDragEnd={handleDragEnd}
               />
             </AnimatePresence>
             <div className="absolute bottom-10 left-0 right-0 text-center pointer-events-none">
@@ -144,7 +141,7 @@ export default function DimoonDetail() {
             </div>
           </div>
 
-          {/* BẢNG CHỌN MÀU - CHỈ HIỂN THỊ TRÊN MOBILE (Thêm mới cho Dimoon) */}
+          {/* MOBILE COLOR PICKER */}
           <div className="mt-8 lg:hidden flex flex-col items-center justify-center">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-900 mb-4">
               Màu sắc: <span className="text-amber-700">{activeColor.name}</span>
@@ -167,7 +164,6 @@ export default function DimoonDetail() {
           </div>
         </div>
 
-        {/* Khung thông tin bên phải */}
         <div className="w-full lg:w-2/5 flex flex-col justify-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <p className="text-sm font-bold tracking-[0.2em] uppercase mb-3" style={{ color: dimoonData.signatureHex }}>Powelldd E-Scooter</p>
@@ -180,7 +176,7 @@ export default function DimoonDetail() {
               {dimoonData.description}
             </p>
 
-            {/* BẢNG CHỌN MÀU - CHỈ HIỂN THỊ TRÊN DESKTOP (Cập nhật class lg:block) */}
+            {/* DESKTOP COLOR PICKER */}
             <div className="mb-12 hidden lg:block">
               <div className="flex items-center justify-between mb-4">
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-amber-900">Màu sắc</p>
@@ -214,7 +210,7 @@ export default function DimoonDetail() {
         </div>
       </section>
 
-      {/* CHÈN DANH SÁCH ẢNH TÍNH NĂNG */}
+      {/* CHÈN DANH SÁCH ẢNH TÍNH NĂNG (MÔ TẢ SẢN PHẨM) */}
       <section className="py-20 bg-gradient-to-b from-[#FDFBF7] to-[#F5EEDC]/50">
         <div className="max-w-6xl mx-auto px-6 flex flex-col gap-12">
           {featureImages.map((src, index) => (
@@ -236,7 +232,20 @@ export default function DimoonDetail() {
         </div>
       </section>
 
-      {/* THÔNG SỐ KỸ THUẬT VINTAGE */}
+      {/* ĐÃ CHUYỂN ALBUM ẢNH XUỐNG ĐÂY (NẰM DƯỚI ẢNH MÔ TẢ VÀ TRÊN THÔNG SỐ) */}
+      <section className="py-16 bg-[#FDFBF7]">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl md:text-3xl font-bold uppercase tracking-widest mb-2 text-amber-950">Album <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-amber-700 to-amber-500">Ảnh</span></h2>
+            <div className="w-12 h-1 bg-amber-600 mx-auto rounded-full"></div>
+          </div>
+          
+          <ImageSlider images={galleryImages} />
+          
+        </div>
+      </section>
+
+      {/* THÔNG SỐ KỸ THUẬT */}
       <section className="py-24 bg-[#F5EEDC]/70 border-t border-amber-200/50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
@@ -312,7 +321,7 @@ export default function DimoonDetail() {
         </div>
       </section>
 
-      {/* FOOTER ĐÃ CẬP NHẬT TỪ HOME */}
+      {/* FOOTER */}
       <footer id="lien-he" className="bg-black text-white pt-24 pb-10 px-6 border-t-8 border-neutral-900">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 border-b border-neutral-800 pb-16 mb-8">
           <div className="lg:col-span-5">
@@ -354,7 +363,7 @@ export default function DimoonDetail() {
         </div>
       </footer>
 
-      {/* CỤM NÚT LIÊN HỆ NỔI (KÈM MESSENGER TỪ HOME) */}
+      {/* CỤM NÚT LIÊN HỆ NỔI */}
       <div className="fixed bottom-6 right-6 z-[900] flex flex-col gap-5">
         <div className="relative w-14 h-14 group">
           <span className="absolute inset-0 rounded-full bg-[#0068FF] animate-ping opacity-60 group-hover:opacity-0 transition-opacity duration-300"></span>

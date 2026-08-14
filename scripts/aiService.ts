@@ -25,7 +25,7 @@ export async function rewriteArticle(rawContent: string, originalTitle: string):
   });
 
   const prompt = `
-    Bạn là một chuyên gia truyền thông của hệ thống "Xe Điện Minh Anh - xe điện Long Biên" (Showroom tại Số 547 Nguyễn Văn Cừ, Bồ Đề, Long Biên, Hà Nội).
+    Bạn là một chuyên gia truyền thông của hệ thống "Xe Điện Minh Anh - xe điện Long Biên" (Showroom tại Số 547 Nguyễn Văn Cừ, Bồ Đề, Hà Nội).
     Nhiệm vụ của bạn là đọc nội dung bài báo dưới đây và viết lại thành một bài tin tức hoàn toàn mới và tự nhiên. Ưu tiên đưa các thông tin về xe điện, xe máy điện, xe đạp điện.
     
     Yêu cầu:

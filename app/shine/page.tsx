@@ -4,9 +4,9 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
-import { ArrowLeft, Zap, BatteryCharging, ShieldCheck, Ruler, Gauge, Weight, Check, MapPin, Phone, Clock, MessageCircle } from "lucide-react";
+import { ArrowLeft, Zap, BatteryCharging, ShieldCheck, Ruler, Gauge, Weight, Check, MapPin, Phone, Clock } from "lucide-react";
+import ImageSlider from "@/components/ImageSlider";
 
-// --- CUSTOM ICONS ---
 const FacebookIcon = ({ size = 24 }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
@@ -22,7 +22,7 @@ const ZaloIcon = ({ size = 24 }) => (
 const MessengerIcon = ({ size = 24 }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
     <path d="M12 2C6.477 2 2 6.14 2 11.25c0 2.91 1.5 5.5 3.94 7.22.18.13.3.34.3.56v2.45c0 .4.46.62.77.38l2.84-2.19c.2-.15.44-.21.68-.18 1.13.16 2.29.25 3.47.25 5.523 0 10-4.14 10-9.25S17.523 2 12 2zm1.09 12.35l-2.48-2.65c-.2-.22-.55-.26-.8-.09l-3.23 2.17c-.36.24-.8-.2-.55-.57l3.66-5.59c.2-.3.57-.38.88-.19l2.48 1.55c.2.13.45.1.62-.07l3.52-3.35c.34-.32.84.14.58.53l-3.8 5.76c-.2.31-.57.4-.88.2z"/>
-  </svg>
+  </svg> 
 );
 
 const TiktokIcon = ({ size = 24 }) => (
@@ -39,66 +39,58 @@ const elegantFont = Plus_Jakarta_Sans({
   display: "swap"
 });
 
-// --- DATA CHI TIẾT SHINE ---
 const shineData = {
-  name: "Shine",
-  tagline: "Shine - Go to school",
+  name: "Shine pro",
+  tagline: "Shine pro - Go to school",
   price: "14.990.000 VNĐ",
   signatureHex: "#F43F5E", 
-  description: "Dẫn đầu xu hướng, tỏa sáng cá tính! Powelldd Shine là sự lựa chọn hoàn hảo cho thế hệ Gen Z năng động. Với thiết kế nhỏ gọn, bảng màu pastel trendy cùng cốp xe rộng rãi lên đến 15L, Shine sẵn sàng đồng hành cùng bạn trên mọi nẻo đường đến trường hay những buổi lượn lờ dạo phố đầy phong cách.",
+  description: "Dẫn đầu xu hướng, tỏa sáng cá tính! Powelldd Shine pro là sự lựa chọn hoàn hảo cho học sinh năng động. Với thiết kế nhỏ gọn, bảng màu pastel trendy cùng cốp xe rộng rãi lên đến 15L, Shine pro sẵn sàng đồng hành cùng bạn trên mọi nẻo đường đến trường hay những buổi lượn lờ dạo phố đầy phong cách.",
   colors: [
-    { name: "Trắng hồng", hex: "#FDF2F8", img: "/images/powelldd/shine/trang-hong.png" },
-    { name: "Đen nhám", hex: "#1A1A1A", img: "/images/powelldd/shine/den-nham.png" },
-    { name: "Xanh Ngọc", hex: "#D1FAE5", img: "/images/powelldd/shine/xanh-ngoc.png" },
-    { name: "Tím Lavender", hex: "#EDE9FE", img: "/images/powelldd/shine/tim-lavender.png" },
-    { name: "Cam Hổ Phách", hex: "#EA580C", img: "/images/powelldd/shine/cam-ho-phach.png" }
+    { name: "Trắng Pearl", hex: "#FDF2F8", img: "/images/powelldd/shine-pro/trang-pearl.png" },
+    { name: "Hồng Blush", hex: "#F472B6", img: "/images/powelldd/shine-pro/hong-blush.png" },
+    { name: "Kem Sunset", hex: "#FEF3C7", img: "/images/powelldd/shine-pro/kem-sunset.png" },
+    { name: "Xám Metallic", hex: "#9CA3AF", img: "/images/powelldd/shine-pro/xam-metallic.png" },
+    { name: "Xám Titan", hex: "#4A5A75", img: "/images/powelldd/shine-pro/xam-titan.png" },
+    { name: "Đen Mate", hex: "#1A1A1A", img: "/images/powelldd/shine-pro/den-mate.png" }
   ],
   specs: [
-    { icon: <Zap size={20} strokeWidth={1.5}/>, label: "Động cơ", value: "500W - Nhẹ nhàng, êm ái" },
+    { icon: <Zap size={20} strokeWidth={1.5}/>, label: "Động cơ", value: "240W - Nhẹ nhàng, êm ái" },
     { icon: <BatteryCharging size={20} strokeWidth={1.5}/>, label: "Pin/Ắc quy", value: "48V-20.3Ah" },
     { icon: <Ruler size={20} strokeWidth={1.5}/>, label: "Quãng đường", value: "70 km / 1 lần sạc" },
-    { icon: <Gauge size={20} strokeWidth={1.5}/>, label: "Vận tốc tối đa", value: "49 km/h" },
-    { icon: <Weight size={20} strokeWidth={1.5}/>, label: "Tải trọng", value: "Lên đến 180 kg" },
-    { icon: <ShieldCheck size={20} strokeWidth={1.5}/>, label: "Kháng nước", value: "Chuẩn IP67 an toàn" }
+    { icon: <Gauge size={20} strokeWidth={1.5}/>, label: "Vận tốc tối đa", value: "25 km/h" },
+    { icon: <Weight size={20} strokeWidth={1.5}/>, label: "Tải trọng", value: "Lên đến 150 kg" },
+    { icon: <ShieldCheck size={20} strokeWidth={1.5}/>, label: "Kháng nước", value: "Chuẩn IPX6 an toàn" }
   ]
 };
 
-// --- DANH SÁCH 8 ẢNH TÍNH NĂNG SHINE ---
 const featureImages = [
-  "/images/vehicles/shine/anh-1.jpg",
-  "/images/vehicles/shine/anh-2.jpg",
-  "/images/vehicles/shine/anh-3.jpg",
-  "/images/vehicles/shine/anh-4.jpg",
-  "/images/vehicles/shine/anh-5.jpg",
-  "/images/vehicles/shine/anh-6.jpg",
-  "/images/vehicles/shine/anh-7.jpg",
-  "/images/vehicles/shine/anh-8.jpg"
+  "/images/vehicles/shine-pro/anh-1.jpg",
+  "/images/vehicles/shine-pro/anh-2.jpg",
+  "/images/vehicles/shine-pro/anh-3.jpg",
+  "/images/vehicles/shine-pro/anh-4.jpg",
+  "/images/vehicles/shine-pro/anh-5.jpg"
 ];
+
+const galleryImages = Array.from({ length: 10 }, (_, i) => `/images/vehicles/shine-pro/gallery/anh(${i + 1}).jpg`);
 
 export default function ShineDetail() {
   const [activeColor, setActiveColor] = useState(shineData.colors[0]);
 
-  // HÀM XỬ LÝ VUỐT (SLIDE) ĐỔI MÀU
   const handleDragEnd = (event: any, info: any) => {
-    const swipeThreshold = 50; // Khoảng cách vuốt tối thiểu
+    const swipeThreshold = 50;
     const currentIndex = shineData.colors.findIndex(c => c.name === activeColor.name);
 
     if (info.offset.x < -swipeThreshold) {
-      // Vuốt sang trái -> Sang ảnh tiếp theo
       const nextIndex = (currentIndex + 1) % shineData.colors.length;
       setActiveColor(shineData.colors[nextIndex]);
     } else if (info.offset.x > swipeThreshold) {
-      // Vuốt sang phải -> Về ảnh trước đó
       const prevIndex = (currentIndex - 1 + shineData.colors.length) % shineData.colors.length;
       setActiveColor(shineData.colors[prevIndex]);
     }
   };
 
   return (
-    // Nền tổng thể được phủ gradient từ Cam nhạt sang Hồng nhạt
     <main className={`min-h-screen bg-gradient-to-br from-orange-100 via-rose-50 to-orange-100 text-[#4C0519] ${elegantFont.className} font-light selection:bg-orange-300 selection:text-rose-900`}>
-      
-      {/* HEADER - GLASSMORPHISM TRÊN NỀN CAM HỒNG */}
       <header className="fixed w-full top-0 bg-white/50 backdrop-blur-xl z-50 border-b border-orange-200 shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <Link href="/" className="flex items-center gap-2 text-rose-600 hover:text-orange-600 transition-colors group">
@@ -112,9 +104,7 @@ export default function ShineDetail() {
         </div>
       </header>
 
-      {/* HERO SECTION */}
       <section className="pt-28 pb-20 px-6 max-w-7xl mx-auto min-h-[90vh] flex flex-col lg:flex-row items-center gap-16">
-        {/* Khung ảnh xe bên trái */}
         <div className="w-full lg:w-3/5 relative">
           <motion.div 
             animate={{ backgroundColor: activeColor.hex }}
@@ -122,7 +112,6 @@ export default function ShineDetail() {
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] rounded-full opacity-40 blur-[80px] -z-10"
           ></motion.div>
           
-          {/* NỀN KHUNG ẢNH: Gradient rực rỡ Cam - Hồng */}
           <div className="w-full aspect-[4/3] lg:aspect-square bg-gradient-to-br from-orange-200 to-rose-200 rounded-[3rem] p-10 flex items-center justify-center border-4 border-white shadow-2xl shadow-rose-200 relative overflow-hidden">
             <AnimatePresence mode="wait">
               <motion.img 
@@ -133,11 +122,11 @@ export default function ShineDetail() {
                 transition={{ duration: 0.4, ease: "easeOut" }}
                 src={activeColor.img} 
                 alt={`Xe điện Shine màu ${activeColor.name}`} 
-                className="w-full h-full object-contain drop-shadow-2xl z-10 cursor-grab active:cursor-grabbing" // Con trỏ vuốt
-                drag="x" // Bật tính năng vuốt kéo ngang
+                className="w-full h-full object-contain drop-shadow-2xl z-10 cursor-grab active:cursor-grabbing"
+                drag="x"
                 dragConstraints={{ left: 0, right: 0 }}
                 dragElastic={0.2}
-                onDragEnd={handleDragEnd} // Sự kiện khi người dùng vuốt xong
+                onDragEnd={handleDragEnd}
               />
             </AnimatePresence>
             <div className="absolute bottom-10 left-0 right-0 text-center pointer-events-none">
@@ -147,7 +136,6 @@ export default function ShineDetail() {
             </div>
           </div>
 
-          {/* BẢNG CHỌN MÀU - CHỈ HIỂN THỊ TRÊN MOBILE (Dưới ảnh) */}
           <div className="mt-8 lg:hidden flex flex-col items-center justify-center">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange-700 mb-4">
               Màu sắc: <span className="text-rose-600">{activeColor.name}</span>
@@ -161,7 +149,9 @@ export default function ShineDetail() {
                   style={{ backgroundColor: color.hex }}
                   title={color.name}
                 >
-                  {activeColor.name === color.name && (color.hex === "#1A1A1A" || color.hex === "#EA580C") ? <Check size={20} className="text-white drop-shadow-md" /> : (activeColor.name === color.name && <Check size={20} className="text-rose-950 drop-shadow-md" />)}
+                  {activeColor.name === color.name && (
+                    <Check size={20} className={`${["#1A1A1A", "#4A5A75", "#9CA3AF", "#F472B6"].includes(color.hex) ? "text-white" : "text-rose-950"} drop-shadow-md`} />
+                  )}
                 </button>
               ))}
             </div>
@@ -169,7 +159,6 @@ export default function ShineDetail() {
           </div>
         </div>
 
-        {/* Khung thông tin bên phải */}
         <div className="w-full lg:w-2/5 flex flex-col justify-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <p className="text-sm font-bold tracking-[0.2em] uppercase mb-3 text-orange-600">Powelldd E-Scooter</p>
@@ -182,7 +171,6 @@ export default function ShineDetail() {
               {shineData.description}
             </p>
 
-            {/* BẢNG CHỌN MÀU - CHỈ HIỂN THỊ TRÊN DESKTOP */}
             <div className="mb-12 hidden lg:block">
               <div className="flex items-center justify-between mb-4">
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-orange-700">Màu sắc</p>
@@ -197,7 +185,9 @@ export default function ShineDetail() {
                     style={{ backgroundColor: color.hex }}
                     title={color.name}
                   >
-                    {activeColor.name === color.name && (color.hex === "#1A1A1A" || color.hex === "#EA580C") ? <Check size={20} className="text-white drop-shadow-md" /> : (activeColor.name === color.name && <Check size={20} className="text-rose-950 drop-shadow-md" />)}
+                    {activeColor.name === color.name && (
+                      <Check size={20} className={`${["#1A1A1A", "#4A5A75", "#9CA3AF", "#F472B6"].includes(color.hex) ? "text-white" : "text-rose-950"} drop-shadow-md`} />
+                    )}
                   </button>
                 ))}
               </div>
@@ -215,7 +205,6 @@ export default function ShineDetail() {
         </div>
       </section>
 
-      {/* CHÈN DANH SÁCH 8 ẢNH TÍNH NĂNG */}
       <section className="py-20 bg-gradient-to-b from-orange-100 to-rose-100">
         <div className="max-w-6xl mx-auto px-6 flex flex-col gap-12">
           {featureImages.map((src, index) => (
@@ -238,7 +227,16 @@ export default function ShineDetail() {
         </div>
       </section>
 
-      {/* THÔNG SỐ KỸ THUẬT (Tone nền Cam Hồng rực) */}
+      <section className="py-16 bg-rose-100">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl md:text-3xl font-bold uppercase tracking-widest mb-2 text-rose-950">Album <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-rose-600">Ảnh</span></h2>
+            <div className="w-12 h-1 bg-orange-400 mx-auto rounded-full"></div>
+          </div>
+          <ImageSlider images={galleryImages} />
+        </div>
+      </section>
+
       <section className="py-24 bg-rose-100 border-t border-rose-200">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
@@ -256,7 +254,6 @@ export default function ShineDetail() {
                 viewport={{ once: true }}
                 className="bg-white/80 backdrop-blur-sm p-8 rounded-[2rem] border-2 border-orange-100 flex items-start gap-5 hover:shadow-2xl hover:shadow-rose-300/40 hover:border-rose-300 transition-all group"
               >
-                {/* Icon có nền Gradient Cam Hồng */}
                 <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-400 to-rose-500 flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform shrink-0">
                   {spec.icon}
                 </div>
@@ -270,7 +267,6 @@ export default function ShineDetail() {
         </div>
       </section>
 
-{/* SHOWROOM & GOOGLE MAPS */}
       <section id="showroom" className="py-24 bg-[#F4F4F6] border-t border-neutral-200">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -315,7 +311,6 @@ export default function ShineDetail() {
         </div>
       </section>
 
-      {/* FOOTER ĐÃ CẬP NHẬT TỪ HOME */}
       <footer id="lien-he" className="bg-black text-white pt-24 pb-10 px-6 border-t-8 border-neutral-900">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 border-b border-neutral-800 pb-16 mb-8">
           <div className="lg:col-span-5">
@@ -357,7 +352,6 @@ export default function ShineDetail() {
         </div>
       </footer>
 
-      {/* CỤM NÚT LIÊN HỆ NỔI (KÈM MESSENGER TỪ HOME) */}
       <div className="fixed bottom-6 right-6 z-[900] flex flex-col gap-5">
         <div className="relative w-14 h-14 group">
           <span className="absolute inset-0 rounded-full bg-[#0068FF] animate-ping opacity-60 group-hover:opacity-0 transition-opacity duration-300"></span>

@@ -4,9 +4,9 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
-import { ArrowLeft, Zap, BatteryCharging, ShieldCheck, Ruler, Gauge, Weight, Check, MapPin, Phone, Clock, MessageCircle } from "lucide-react";
+import { ArrowLeft, Zap, BatteryCharging, ShieldCheck, Ruler, Gauge, Weight, Check, MapPin, Phone, Clock } from "lucide-react";
+import ImageSlider from "@/components/ImageSlider";
 
-// --- CUSTOM ICONS ---
 const FacebookIcon = ({ size = 24 }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
@@ -22,8 +22,9 @@ const ZaloIcon = ({ size = 24 }) => (
 const MessengerIcon = ({ size = 24 }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
     <path d="M12 2C6.477 2 2 6.14 2 11.25c0 2.91 1.5 5.5 3.94 7.22.18.13.3.34.3.56v2.45c0 .4.46.62.77.38l2.84-2.19c.2-.15.44-.21.68-.18 1.13.16 2.29.25 3.47.25 5.523 0 10-4.14 10-9.25S17.523 2 12 2zm1.09 12.35l-2.48-2.65c-.2-.22-.55-.26-.8-.09l-3.23 2.17c-.36.24-.8-.2-.55-.57l3.66-5.59c.2-.3.57-.38.88-.19l2.48 1.55c.2.13.45.1.62-.07l3.52-3.35c.34-.32.84.14.58.53l-3.8 5.76c-.2.31-.57.4-.88.2z"/>
-  </svg>
+  </svg> 
 );
+
 const TiktokIcon = ({ size = 24 }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path>
@@ -31,13 +32,13 @@ const TiktokIcon = ({ size = 24 }) => (
     <path d="M15 4v4a4 4 0 0 0 4 4"></path>
   </svg>
 );
+
 const elegantFont = Plus_Jakarta_Sans({ 
   subsets: ["latin", "vietnamese"], 
   weight: ["300", "400", "500", "600"],
   display: "swap"
 });
 
-// --- DATA CHI TIẾT WESPAN PRO ---
 const wespanData = {
   name: "Wespan Pro",
   tagline: "Thiết kế vượt thời gian",
@@ -60,37 +61,33 @@ const wespanData = {
   ]
 };
 
-// --- DANH SÁCH ẢNH TÍNH NĂNG WESPAN PRO ---
 const featureImages = [
   "/images/vehicles/wespanpro/Chong-nuoc-Wespan-Pro-2048x1152.jpg",
   "/images/vehicles/wespanpro/z7909900961499_e418c42f97a1610c03d998c1cb051cf8.jpg",
   "/images/vehicles/wespanpro/z7909902496987_fd7c49fab154b775981e8dae041f079b.jpg"
 ];
 
+const galleryImages = Array.from({ length: 13 }, (_, i) => `/images/vehicles/wespanpro/gallery/anh(${i + 1}).jpg`);
+
 export default function WespanProDetail() {
   const [activeColor, setActiveColor] = useState(wespanData.colors[0]);
 
-  // HÀM XỬ LÝ VUỐT (SLIDE) ĐỔI MÀU
   const handleDragEnd = (event: any, info: any) => {
-    const swipeThreshold = 50; // Khoảng cách vuốt tối thiểu
+    const swipeThreshold = 50; 
     const currentIndex = wespanData.colors.findIndex(c => c.name === activeColor.name);
 
     if (info.offset.x < -swipeThreshold) {
-      // Vuốt sang trái -> Sang ảnh tiếp theo
       const nextIndex = (currentIndex + 1) % wespanData.colors.length;
       setActiveColor(wespanData.colors[nextIndex]);
     } else if (info.offset.x > swipeThreshold) {
-      // Vuốt sang phải -> Về ảnh trước đó
       const prevIndex = (currentIndex - 1 + wespanData.colors.length) % wespanData.colors.length;
       setActiveColor(wespanData.colors[prevIndex]);
     }
   };
 
   return (
-    // Nền tổng thể: Gradient Xám Bạc Kim Loại (Silver Metal)
     <main className={`min-h-screen bg-gradient-to-br from-[#F4F4F5] via-[#E4E4E7] to-[#D4D4D8] text-zinc-900 ${elegantFont.className} font-light selection:bg-zinc-300 selection:text-zinc-900`}>
       
-      {/* HEADER SILVER VINTAGE */}
       <header className="fixed w-full top-0 bg-[#F4F4F5]/80 backdrop-blur-xl z-50 border-b border-zinc-300 shadow-sm shadow-zinc-400/30">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <Link href="/" className="flex items-center gap-2 text-zinc-600 hover:text-zinc-900 transition-colors group">
@@ -104,9 +101,7 @@ export default function WespanProDetail() {
         </div>
       </header>
 
-      {/* HERO SECTION - CINEMATIC METAL LAYOUT */}
       <section className="pt-28 pb-20 px-6 max-w-7xl mx-auto min-h-[90vh] flex flex-col lg:flex-row items-center gap-16">
-        {/* Khung ảnh xe bên trái */}
         <div className="w-full lg:w-3/5 relative">
           <motion.div 
             animate={{ backgroundColor: activeColor.hex }}
@@ -124,11 +119,11 @@ export default function WespanProDetail() {
                 transition={{ duration: 0.4, ease: "easeOut" }}
                 src={activeColor.img} 
                 alt={`Xe điện Wespan Pro màu ${activeColor.name}`} 
-                className="w-full h-full object-contain drop-shadow-2xl z-10 cursor-grab active:cursor-grabbing" // Con trỏ vuốt
-                drag="x" // Bật tính năng kéo vuốt dọc theo trục X
+                className="w-full h-full object-contain drop-shadow-2xl z-10 cursor-grab active:cursor-grabbing" 
+                drag="x" 
                 dragConstraints={{ left: 0, right: 0 }}
                 dragElastic={0.2}
-                onDragEnd={handleDragEnd} // Kích hoạt đổi màu
+                onDragEnd={handleDragEnd} 
               />
             </AnimatePresence>
             <div className="absolute bottom-10 left-0 right-0 text-center pointer-events-none">
@@ -138,7 +133,6 @@ export default function WespanProDetail() {
             </div>
           </div>
 
-          {/* BẢNG CHỌN MÀU - CHỈ HIỂN THỊ TRÊN MOBILE (Dưới ảnh) */}
           <div className="mt-8 lg:hidden flex flex-col items-center justify-center">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-800 mb-4">
               Màu sắc: <span className="text-zinc-500">{activeColor.name}</span>
@@ -161,7 +155,6 @@ export default function WespanProDetail() {
           </div>
         </div>
 
-        {/* Khung thông tin bên phải */}
         <div className="w-full lg:w-2/5 flex flex-col justify-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <p className="text-sm font-bold tracking-[0.2em] uppercase mb-3" style={{ color: wespanData.signatureHex }}>Powelldd E-Scooter</p>
@@ -174,7 +167,6 @@ export default function WespanProDetail() {
               {wespanData.description}
             </p>
 
-            {/* BẢNG CHỌN MÀU - CHỈ HIỂN THỊ TRÊN DESKTOP */}
             <div className="mb-12 hidden lg:block">
               <div className="flex items-center justify-between mb-4">
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-zinc-800">Màu sắc</p>
@@ -208,7 +200,6 @@ export default function WespanProDetail() {
         </div>
       </section>
 
-      {/* CHÈN DANH SÁCH ẢNH TÍNH NĂNG */}
       <section className="py-20 bg-gradient-to-b from-transparent to-zinc-200/80">
         <div className="max-w-6xl mx-auto px-6 flex flex-col gap-12">
           {featureImages.map((src, index) => (
@@ -230,7 +221,16 @@ export default function WespanProDetail() {
         </div>
       </section>
 
-      {/* THÔNG SỐ KỸ THUẬT */}
+      <section className="py-16 bg-zinc-200/80">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl md:text-3xl font-bold uppercase tracking-widest mb-2 text-zinc-900">Album <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-zinc-600 to-zinc-400">Ảnh</span></h2>
+            <div className="w-12 h-1 bg-zinc-500 mx-auto rounded-full"></div>
+          </div>
+          <ImageSlider images={galleryImages} />
+        </div>
+      </section>
+
       <section className="py-24 bg-gradient-to-b from-zinc-200/80 to-zinc-300/50 border-t border-zinc-300">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
@@ -261,7 +261,6 @@ export default function WespanProDetail() {
         </div>
       </section>
 
-      {/* SHOWROOM & GOOGLE MAPS */}
       <section id="showroom" className="py-24 bg-[#F4F4F6] border-t border-neutral-200">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -306,7 +305,6 @@ export default function WespanProDetail() {
         </div>
       </section>
 
-      {/* FOOTER ĐÃ CẬP NHẬT TỪ HOME */}
       <footer id="lien-he" className="bg-black text-white pt-24 pb-10 px-6 border-t-8 border-neutral-900">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 border-b border-neutral-800 pb-16 mb-8">
           <div className="lg:col-span-5">
@@ -348,7 +346,6 @@ export default function WespanProDetail() {
         </div>
       </footer>
 
-      {/* CỤM NÚT LIÊN HỆ NỔI (KÈM MESSENGER TỪ HOME) */}
       <div className="fixed bottom-6 right-6 z-[900] flex flex-col gap-5">
         <div className="relative w-14 h-14 group">
           <span className="absolute inset-0 rounded-full bg-[#0068FF] animate-ping opacity-60 group-hover:opacity-0 transition-opacity duration-300"></span>

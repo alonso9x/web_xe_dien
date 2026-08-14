@@ -4,9 +4,9 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
-import { ArrowLeft, Zap, BatteryCharging, ShieldCheck, Ruler, Gauge, Weight, Check, MapPin, Phone, Clock, MessageCircle } from "lucide-react";
+import { ArrowLeft, Zap, BatteryCharging, ShieldCheck, Ruler, Gauge, Weight, Check, MapPin, Phone, Clock } from "lucide-react";
+import ImageSlider from "@/components/ImageSlider";
 
-// --- CUSTOM ICONS ---
 const FacebookIcon = ({ size = 24 }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
@@ -22,7 +22,7 @@ const ZaloIcon = ({ size = 24 }) => (
 const MessengerIcon = ({ size = 24 }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
     <path d="M12 2C6.477 2 2 6.14 2 11.25c0 2.91 1.5 5.5 3.94 7.22.18.13.3.34.3.56v2.45c0 .4.46.62.77.38l2.84-2.19c.2-.15.44-.21.68-.18 1.13.16 2.29.25 3.47.25 5.523 0 10-4.14 10-9.25S17.523 2 12 2zm1.09 12.35l-2.48-2.65c-.2-.22-.55-.26-.8-.09l-3.23 2.17c-.36.24-.8-.2-.55-.57l3.66-5.59c.2-.3.57-.38.88-.19l2.48 1.55c.2.13.45.1.62-.07l3.52-3.35c.34-.32.84.14.58.53l-3.8 5.76c-.2.31-.57.4-.88.2z"/>
-  </svg>
+  </svg> 
 );
 
 const TiktokIcon = ({ size = 24 }) => (
@@ -39,12 +39,11 @@ const elegantFont = Plus_Jakarta_Sans({
   display: "swap"
 });
 
-// --- DATA CHI TIẾT WALKMEN ---
 const walkmenData = {
   name: "Walkmen",
   tagline: "Tự do không sợ hãi",
   price: "13.800.000 VNĐ",
-  signatureHex: "#DC2626", // Tone Đỏ làm điểm nhấn trên nền Đen/Xanh
+  signatureHex: "#DC2626", 
   description: "Đánh thức bản lĩnh, bứt phá giới hạn. Powelldd Walkmen mang kiểu dáng thể thao, góc cạnh với những đường nét mạnh mẽ. Khung gầm chắc chắn cùng khối động cơ 600W bứt tốc ấn tượng, Walkmen sẵn sàng cùng bạn chinh phục mọi thử thách, thể hiện cá tính không trộn lẫn trên mọi hành trình.",
   colors: [
     { name: "Đen Phantom", hex: "#1A1A1A", img: "/images/powelldd/walkmen/den-phantom.png" },
@@ -63,8 +62,6 @@ const walkmenData = {
   ]
 };
 
-// --- DANH SÁCH ẢNH TÍNH NĂNG WALKMEN ---
-// Tạm để placeholder, anh copy ảnh tính năng vào public/images/vehicles/walkmen/ rồi đổi tên file ở đây nhé
 const featureImages = [
   "/images/vehicles/walkmen/anh-1.jpg", 
   "/images/vehicles/walkmen/anh-2.jpg",
@@ -72,20 +69,19 @@ const featureImages = [
   "/images/vehicles/walkmen/anh-4.jpg"
 ];
 
+const galleryImages = Array.from({ length: 10 }, (_, i) => `/images/vehicles/walkmen/gallery/anh(${i + 1}).jpg`);
+
 export default function WalkmenDetail() {
   const [activeColor, setActiveColor] = useState(walkmenData.colors[0]);
 
-  // HÀM XỬ LÝ VUỐT (SLIDE) ĐỔI MÀU
   const handleDragEnd = (event: any, info: any) => {
-    const swipeThreshold = 50; // Khoảng cách vuốt tối thiểu
+    const swipeThreshold = 50; 
     const currentIndex = walkmenData.colors.findIndex(c => c.name === activeColor.name);
 
     if (info.offset.x < -swipeThreshold) {
-      // Vuốt sang trái -> Sang ảnh tiếp theo
       const nextIndex = (currentIndex + 1) % walkmenData.colors.length;
       setActiveColor(walkmenData.colors[nextIndex]);
     } else if (info.offset.x > swipeThreshold) {
-      // Vuốt sang phải -> Về ảnh trước đó
       const prevIndex = (currentIndex - 1 + walkmenData.colors.length) % walkmenData.colors.length;
       setActiveColor(walkmenData.colors[prevIndex]);
     }
@@ -94,7 +90,6 @@ export default function WalkmenDetail() {
   return (
     <main className={`min-h-screen bg-[#0B0F19] text-white ${elegantFont.className} font-light selection:bg-red-600 selection:text-white`}>
       
-      {/* HEADER TỐI - GLASSMORPHISM ĐEN */}
       <header className="fixed w-full top-0 bg-[#0B0F19]/80 backdrop-blur-xl z-50 border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <Link href="/" className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors group">
@@ -108,11 +103,8 @@ export default function WalkmenDetail() {
         </div>
       </header>
 
-      {/* HERO SECTION - DARK MODE */}
       <section className="pt-28 pb-20 px-6 max-w-7xl mx-auto min-h-[90vh] flex flex-col lg:flex-row items-center gap-16">
-        {/* Khung ảnh xe bên trái */}
         <div className="w-full lg:w-3/5 relative">
-          {/* Vòng sáng xanh dương đậm phía sau */}
           <motion.div 
             animate={{ backgroundColor: activeColor.hex }}
             transition={{ duration: 0.8 }}
@@ -129,11 +121,11 @@ export default function WalkmenDetail() {
                 transition={{ duration: 0.4, ease: "easeOut" }}
                 src={activeColor.img} 
                 alt={`Xe điện Walkmen màu ${activeColor.name}`} 
-                className="w-full h-full object-contain drop-shadow-2xl z-10 cursor-grab active:cursor-grabbing" // Con trỏ vuốt
-                drag="x" // Bật vuốt ngang
+                className="w-full h-full object-contain drop-shadow-2xl z-10 cursor-grab active:cursor-grabbing"
+                drag="x"
                 dragConstraints={{ left: 0, right: 0 }}
                 dragElastic={0.2}
-                onDragEnd={handleDragEnd} // Sự kiện đổi màu
+                onDragEnd={handleDragEnd}
               />
             </AnimatePresence>
             <div className="absolute bottom-10 left-0 right-0 text-center pointer-events-none">
@@ -143,7 +135,6 @@ export default function WalkmenDetail() {
             </div>
           </div>
 
-          {/* BẢNG CHỌN MÀU - CHỈ HIỂN THỊ TRÊN MOBILE (Dưới ảnh) */}
           <div className="mt-8 lg:hidden flex flex-col items-center justify-center">
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 mb-4">
               Màu sắc: <span className="text-blue-400">{activeColor.name}</span>
@@ -166,7 +157,6 @@ export default function WalkmenDetail() {
           </div>
         </div>
 
-        {/* Khung thông tin bên phải */}
         <div className="w-full lg:w-2/5 flex flex-col justify-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <p className="text-sm font-semibold tracking-[0.2em] uppercase mb-3 text-red-500">Powelldd Thể Thao</p>
@@ -179,7 +169,6 @@ export default function WalkmenDetail() {
               {walkmenData.description}
             </p>
 
-            {/* BẢNG CHỌN MÀU - CHỈ HIỂN THỊ TRÊN DESKTOP */}
             <div className="mb-12 hidden lg:block">
               <div className="flex items-center justify-between mb-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Màu sắc</p>
@@ -213,7 +202,6 @@ export default function WalkmenDetail() {
         </div>
       </section>
 
-      {/* CHÈN DANH SÁCH ẢNH TÍNH NĂNG */}
       <section className="py-20 bg-black">
         <div className="max-w-6xl mx-auto px-6 flex flex-col gap-12">
           {featureImages.map((src, index) => (
@@ -236,7 +224,18 @@ export default function WalkmenDetail() {
         </div>
       </section>
 
-      {/* THÔNG SỐ KỸ THUẬT (Giao diện tối) */}
+      <section className="py-16 bg-[#0B0F19]">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl md:text-3xl font-bold uppercase tracking-widest mb-2 text-white">
+              Album <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-red-500">Ảnh</span>
+            </h2>
+            <div className="w-12 h-1 bg-red-600 mx-auto rounded-full"></div>
+          </div>
+          <ImageSlider images={galleryImages} />
+        </div>
+      </section>
+
       <section className="py-24 bg-[#0B0F19] border-t border-slate-800">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
@@ -267,7 +266,6 @@ export default function WalkmenDetail() {
         </div>
       </section>
 
-{/* SHOWROOM & GOOGLE MAPS */}
       <section id="showroom" className="py-24 bg-[#F4F4F6] border-t border-neutral-200 text-zinc-900">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -312,7 +310,6 @@ export default function WalkmenDetail() {
         </div>
       </section>
 
-      {/* FOOTER ĐÃ CẬP NHẬT TỪ HOME */}
       <footer id="lien-he" className="bg-black text-white pt-24 pb-10 px-6 border-t-8 border-neutral-900">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 border-b border-neutral-800 pb-16 mb-8">
           <div className="lg:col-span-5">
@@ -354,7 +351,6 @@ export default function WalkmenDetail() {
         </div>
       </footer>
 
-      {/* CỤM NÚT LIÊN HỆ NỔI (KÈM MESSENGER TỪ HOME) */}
       <div className="fixed bottom-6 right-6 z-[900] flex flex-col gap-5">
         <div className="relative w-14 h-14 group">
           <span className="absolute inset-0 rounded-full bg-[#0068FF] animate-ping opacity-60 group-hover:opacity-0 transition-opacity duration-300"></span>

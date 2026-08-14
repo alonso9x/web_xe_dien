@@ -4,9 +4,9 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
-import { ArrowLeft, Zap, BatteryCharging, ShieldCheck, Ruler, Gauge, Weight, Check, MapPin, Phone, Clock, MessageCircle } from "lucide-react";
+import { ArrowLeft, Zap, BatteryCharging, ShieldCheck, Ruler, Gauge, Weight, Check, MapPin, Phone, Clock } from "lucide-react";
+import ImageSlider from "@/components/ImageSlider";
 
-// --- CUSTOM ICONS ---
 const FacebookIcon = ({ size = 24 }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
@@ -22,7 +22,7 @@ const ZaloIcon = ({ size = 24 }) => (
 const MessengerIcon = ({ size = 24 }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
     <path d="M12 2C6.477 2 2 6.14 2 11.25c0 2.91 1.5 5.5 3.94 7.22.18.13.3.34.3.56v2.45c0 .4.46.62.77.38l2.84-2.19c.2-.15.44-.21.68-.18 1.13.16 2.29.25 3.47.25 5.523 0 10-4.14 10-9.25S17.523 2 12 2zm1.09 12.35l-2.48-2.65c-.2-.22-.55-.26-.8-.09l-3.23 2.17c-.36.24-.8-.2-.55-.57l3.66-5.59c.2-.3.57-.38.88-.19l2.48 1.55c.2.13.45.1.62-.07l3.52-3.35c.34-.32.84.14.58.53l-3.8 5.76c-.2.31-.57.4-.88.2z"/>
-  </svg>
+  </svg> 
 );
 
 const TiktokIcon = ({ size = 24 }) => (
@@ -39,12 +39,11 @@ const elegantFont = Plus_Jakarta_Sans({
   display: "swap"
 });
 
-// --- DATA CHI TIẾT HAZEL ---
 const hazelData = {
   name: "Hazel",
   tagline: "Ngọt ngào tỏa sáng",
-  price: "14.990.000 VNĐ",
-  signatureHex: "#22D3EE", // Màu Xanh Ngọc (Cyan) điểm nhấn
+  price: "14.490.000 VNĐ",
+  signatureHex: "#22D3EE",
   description: "Tinh tế trong từng đường nét, Hazel là người bạn đồng hành lý tưởng cho những ai yêu thích sự nhẹ nhàng và thanh lịch. Với bảng màu pastel kute xỉu kết hợp cùng động cơ 600W mạnh mẽ và khả năng kháng nước chuẩn IPX5, Hazel không chỉ đẹp mà còn cực kỳ bền bỉ, giúp bạn tự tin tỏa sáng rạng rỡ dưới mọi điều kiện thời tiết.",
   colors: [
     { name: "Hồng Đào", hex: "#FBCFE8", img: "/images/powelldd/hazel/hong-dao.png" },
@@ -62,39 +61,35 @@ const hazelData = {
   ]
 };
 
-// --- DANH SÁCH ẢNH TÍNH NĂNG HAZEL ---
 const featureImages = [
   "/images/vehicles/hazel/anh-1 (1).jpg",
   "/images/vehicles/hazel/anh-1 (3).jpg",
   "/images/vehicles/hazel/anh-1 (4).jpg",
   "/images/vehicles/hazel/anh-1 (5).jpg",
-  "/images/vehicles/hazel/anh-1 (2).jpg",
+  "/images/vehicles/hazel/anh-1 (2).jpg"
 ];
+
+const galleryImages = Array.from({ length: 6 }, (_, i) => `/images/vehicles/hazel/gallery/anh(${i + 1}).jpg`);
 
 export default function HazelDetail() {
   const [activeColor, setActiveColor] = useState(hazelData.colors[0]);
 
-  // HÀM XỬ LÝ VUỐT (SLIDE) ĐỔI MÀU
   const handleDragEnd = (event: any, info: any) => {
-    const swipeThreshold = 50; // Khoảng cách vuốt tối thiểu
+    const swipeThreshold = 50;
     const currentIndex = hazelData.colors.findIndex(c => c.name === activeColor.name);
 
     if (info.offset.x < -swipeThreshold) {
-      // Vuốt sang trái -> Sang ảnh tiếp theo
       const nextIndex = (currentIndex + 1) % hazelData.colors.length;
       setActiveColor(hazelData.colors[nextIndex]);
     } else if (info.offset.x > swipeThreshold) {
-      // Vuốt sang phải -> Về ảnh trước đó
       const prevIndex = (currentIndex - 1 + hazelData.colors.length) % hazelData.colors.length;
       setActiveColor(hazelData.colors[prevIndex]);
     }
   };
 
   return (
-    // Nền tổng thể được phủ gradient Hồng Pastel mờ nhẹ (pink-50, rose-50) kết hợp Xanh Ngọc (cyan-50)
     <main className={`min-h-screen bg-gradient-to-br from-pink-50 via-rose-50/50 to-cyan-50/40 text-slate-800 ${elegantFont.className} font-light selection:bg-cyan-200 selection:text-pink-600`}>
       
-      {/* HEADER GLASSMORPHISM TRÊN NỀN HỒNG PASTEL */}
       <header className="fixed w-full top-0 bg-pink-50/70 backdrop-blur-xl z-50 border-b border-pink-100">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <Link href="/" className="flex items-center gap-2 text-pink-500 hover:text-cyan-600 transition-colors group">
@@ -108,9 +103,7 @@ export default function HazelDetail() {
         </div>
       </header>
 
-      {/* HERO SECTION */}
       <section className="pt-28 pb-20 px-6 max-w-7xl mx-auto min-h-[90vh] flex flex-col lg:flex-row items-center gap-16">
-        {/* Khung ảnh xe bên trái */}
         <div className="w-full lg:w-3/5 relative">
           <motion.div 
             animate={{ backgroundColor: activeColor.hex }}
@@ -118,7 +111,6 @@ export default function HazelDetail() {
             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] rounded-full opacity-40 blur-[80px] -z-10"
           ></motion.div>
           
-          {/* Nền khung ảnh pha Hồng Pastel - Xanh Ngọc */}
           <div className="w-full aspect-[4/3] lg:aspect-square bg-gradient-to-br from-pink-100/60 to-cyan-100/40 rounded-[3rem] p-10 flex items-center justify-center border-4 border-pink-50 shadow-xl shadow-pink-200/40 relative overflow-hidden">
             <AnimatePresence mode="wait">
               <motion.img 
@@ -129,11 +121,11 @@ export default function HazelDetail() {
                 transition={{ duration: 0.4, ease: "easeOut" }}
                 src={activeColor.img} 
                 alt={`Xe điện Hazel màu ${activeColor.name}`} 
-                className="w-full h-full object-contain drop-shadow-2xl z-10 cursor-grab active:cursor-grabbing" // Thêm icon con trỏ kéo thả
-                drag="x" // Bật tính năng vuốt ngang
+                className="w-full h-full object-contain drop-shadow-2xl z-10 cursor-grab active:cursor-grabbing"
+                drag="x"
                 dragConstraints={{ left: 0, right: 0 }}
                 dragElastic={0.2}
-                onDragEnd={handleDragEnd} // Kích hoạt đổi màu khi vuốt
+                onDragEnd={handleDragEnd}
               />
             </AnimatePresence>
             <div className="absolute bottom-10 left-0 right-0 text-center pointer-events-none">
@@ -143,7 +135,6 @@ export default function HazelDetail() {
             </div>
           </div>
 
-          {/* BẢNG CHỌN MÀU - CHỈ HIỂN THỊ TRÊN MOBILE (Dưới ảnh) */}
           <div className="mt-8 lg:hidden flex flex-col items-center justify-center">
             <p className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-700 mb-4">
               Màu sắc: <span className="text-pink-500">{activeColor.name}</span>
@@ -153,7 +144,7 @@ export default function HazelDetail() {
                 <button 
                   key={`mobile-${color.name}`}
                   onClick={() => setActiveColor(color)}
-                  className={`relative w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-sm ${activeColor.name === color.name ? "ring-4 ring-offset-4 ring-offset-pink-50 ring-cyan-400 scale-110" : "ring-2 ring-pink-100 hover:ring-pink-300 hover:scale-110"}`}
+                  className={`relative w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-md ${activeColor.name === color.name ? "ring-4 ring-offset-4 ring-offset-pink-50 ring-cyan-400 scale-110" : "ring-2 ring-pink-100 hover:ring-pink-300 hover:scale-110"}`}
                   style={{ backgroundColor: color.hex }}
                   title={color.name}
                 >
@@ -165,7 +156,6 @@ export default function HazelDetail() {
           </div>
         </div>
 
-        {/* Khung thông tin bên phải */}
         <div className="w-full lg:w-2/5 flex flex-col justify-center">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <p className="text-sm font-bold tracking-[0.2em] uppercase mb-3 text-pink-500">Powelldd E-Scooter</p>
@@ -178,7 +168,6 @@ export default function HazelDetail() {
               {hazelData.description}
             </p>
 
-            {/* BẢNG CHỌN MÀU - CHỈ HIỂN THỊ TRÊN DESKTOP */}
             <div className="mb-12 hidden lg:block">
               <div className="flex items-center justify-between mb-4">
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-cyan-700">Màu sắc</p>
@@ -189,7 +178,7 @@ export default function HazelDetail() {
                   <button 
                     key={`desktop-${color.name}`}
                     onClick={() => setActiveColor(color)}
-                    className={`relative w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-sm ${activeColor.name === color.name ? "ring-4 ring-offset-4 ring-offset-pink-50 ring-cyan-400 scale-110" : "ring-2 ring-pink-100 hover:ring-pink-300 hover:scale-110"}`}
+                    className={`relative w-12 h-12 rounded-full flex items-center justify-center transition-all shadow-md ${activeColor.name === color.name ? "ring-4 ring-offset-4 ring-offset-pink-50 ring-cyan-400 scale-110" : "ring-2 ring-pink-100 hover:ring-pink-300 hover:scale-110"}`}
                     style={{ backgroundColor: color.hex }}
                     title={color.name}
                   >
@@ -211,7 +200,6 @@ export default function HazelDetail() {
         </div>
       </section>
 
-      {/* CHÈN DANH SÁCH ẢNH TÍNH NĂNG (Bỏ hẳn nền trắng) */}
       <section className="py-20 bg-gradient-to-b from-transparent to-pink-100/40">
         <div className="max-w-6xl mx-auto px-6 flex flex-col gap-12">
           {featureImages.map((src, index) => (
@@ -234,7 +222,18 @@ export default function HazelDetail() {
         </div>
       </section>
 
-      {/* THÔNG SỐ KỸ THUẬT (Tone nền Hồng Pastel / Cyan) */}
+      <section className="py-16 bg-pink-100/40">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl md:text-3xl font-bold uppercase tracking-widest mb-2 text-cyan-900">
+              Album <span className="italic text-transparent bg-clip-text bg-gradient-to-r from-cyan-500 to-pink-500">Ảnh</span>
+            </h2>
+            <div className="w-12 h-1 bg-pink-400 mx-auto rounded-full"></div>
+          </div>
+          <ImageSlider images={galleryImages} />
+        </div>
+      </section>
+
       <section className="py-24 bg-gradient-to-b from-pink-50/80 to-cyan-50/50 border-t border-pink-100">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
@@ -265,7 +264,6 @@ export default function HazelDetail() {
         </div>
       </section>
 
-      {/* SHOWROOM & GOOGLE MAPS */}
       <section id="showroom" className="py-24 bg-[#F4F4F6] border-t border-neutral-200">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -310,7 +308,6 @@ export default function HazelDetail() {
         </div>
       </section>
 
-      {/* FOOTER ĐÃ CẬP NHẬT TỪ HOME */}
       <footer id="lien-he" className="bg-black text-white pt-24 pb-10 px-6 border-t-8 border-neutral-900">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 border-b border-neutral-800 pb-16 mb-8">
           <div className="lg:col-span-5">
@@ -352,7 +349,6 @@ export default function HazelDetail() {
         </div>
       </footer>
 
-      {/* CỤM NÚT LIÊN HỆ NỔI (KÈM MESSENGER TỪ HOME) */}
       <div className="fixed bottom-6 right-6 z-[900] flex flex-col gap-5">
         <div className="relative w-14 h-14 group">
           <span className="absolute inset-0 rounded-full bg-[#0068FF] animate-ping opacity-60 group-hover:opacity-0 transition-opacity duration-300"></span>

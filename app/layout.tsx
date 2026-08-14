@@ -1,35 +1,99 @@
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
-import Script from "next/script"; // Đã bổ sung thư viện Script của Next.js
+import Script from "next/script";
 import "./globals.css";
 
-const montserrat = Montserrat({ 
-  subsets: ["latin", "vietnamese"], 
+const montserrat = Montserrat({
+  subsets: ["latin", "vietnamese"],
   weight: ["400", "500", "700", "900"],
-  display: "swap"
+  display: "swap",
 });
 
-// BỘ TỪ KHÓA VÀ THÔNG TIN CHUẨN SEO
 export const metadata: Metadata = {
-  title: "Xe Điện Long Biên | Xe Điện Minh Anh – Đại Lý Chính Hãng",
-  description: "Hệ thống phân phối Minh Anh chuyên phân phối các dòng xe máy điện, xe đạp điện, xe trợ lực điện với các thương hiệu Powelldd, TMT, Vinfast....",
-  keywords: "xe điện minh anh, xe điện học sinh, xe máy điện hà nội, xe điện Long Biên,xedienminhanh, xe điện hà nội, xe đạp điện long biên, xe đạp điện hà nội",
+  metadataBase: new URL("https://xedienminhanh.vn"),
+  title: {
+    default: "Xe Điện Long Biên | Xe Điện Minh Anh – Đại Lý Chính Hãng",
+    template: "%s | Xe Điện Minh Anh",
+  },
+  description:
+    "Đại lý phân phối xe máy điện, xe đạp điện chính hãng tại Long Biên, Hà Nội. Trải nghiệm các dòng xe Powelldd, Vinfast, TMT uy tín với giá tốt nhất.",
+  applicationName: "Xe Điện Minh Anh",
+  robots: {
+    index: true,
+    follow: true,
+  },
   openGraph: {
-    title: "Xe Điện Long Biên | Xe Điện Minh Anh – Đại Lý Chính Hãng",
-    description: "Trải nghiệm các mẫu xe điện Neo-Retro đỉnh cao tại 547 Nguyễn Văn Cừ.",
-    url: "https://xedienminhanh.vn", 
+    type: "website",
+    locale: "vi_VN",
+    url: "https://xedienminhanh.vn/",
     siteName: "Xe Điện Minh Anh",
+    title: "Xe Điện Long Biên | Xe Điện Minh Anh – Đại Lý Chính Hãng",
+    description:
+      "Đại lý phân phối xe máy điện, xe đạp điện chính hãng tại Long Biên, Hà Nội. Trải nghiệm các mẫu xe điện thời thượng, chất lượng cao tại 547 Nguyễn Văn Cừ.",
     images: [
       {
-        url: "/images/banner/banner-3.png", // Ảnh hiển thị khi anh share link qua Zalo, Facebook
+        url: "/images/banner/banner-3.png",
         width: 1200,
         height: 630,
-        alt: "Hệ thống phân phối Xe Điện Minh Anh",
+        alt: "Xe Điện Minh Anh",
       },
     ],
-    locale: "vi_VN",
-    type: "website",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "Xe Điện Long Biên | Xe Điện Minh Anh – Đại Lý Chính Hãng",
+    description:
+      "Đại lý phân phối xe máy điện, xe đạp điện chính hãng tại Long Biên, Hà Nội.",
+    images: ["/images/banner/banner-3.png"],
+  },
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://xedienminhanh.vn/#website",
+      "url": "https://xedienminhanh.vn/",
+      "name": "Xe Điện Minh Anh",
+      "alternateName": [
+        "Xe Điện Long Biên",
+        "Minh Anh E-Scooter",
+        "xedienminhanh.vn"
+      ],
+      "publisher": {
+        "@id": "https://xedienminhanh.vn/#store"
+      }
+    },
+    {
+      "@type": "AutoDealer",
+      "@id": "https://xedienminhanh.vn/#store",
+      "name": "Xe Điện Minh Anh",
+      "url": "https://xedienminhanh.vn/",
+      "telephone": "0917747777",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "547 Nguyễn Văn Cừ, Bồ Đề",
+        "addressLocality": "Long Biên",
+        "addressRegion": "Hà Nội",
+        "addressCountry": "VN"
+      },
+      "openingHoursSpecification": {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": [
+          "Monday",
+          "Tuesday",
+          "Wednesday",
+          "Thursday",
+          "Friday",
+          "Saturday",
+          "Sunday"
+        ],
+        "opens": "08:00",
+        "closes": "21:00"
+      }
+    }
+  ]
 };
 
 export default function RootLayout({
@@ -40,26 +104,14 @@ export default function RootLayout({
   return (
     <html lang="vi" className="scroll-smooth">
       <body className={montserrat.className}>
-        
-        {/* ĐÂY LÀ "BẰNG CHỨNG THÉP" ÉP GOOGLE NHẬN DIỆN TÊN TRANG WEB */}
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "WebSite",
-              "name": "Xe Điện Minh Anh",
-              "alternateName": "Minh Anh",
-              "url": "https://xedienminhanh.vn/"
-            })
-          }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        {/* HẾT KHAI BÁO TÊN TRANG WEB */}
-
-        {/* ĐOẠN MÃ GOOGLE GỘP CHUNG (ANALYTICS + ADS) */}
+        
         <Script
           strategy="afterInteractive"
-          src={`https://www.googletagmanager.com/gtag/js?id=G-11WYGY4N4Z`}
+          src="https://www.googletagmanager.com/gtag/js?id=G-11WYGY4N4Z"
         />
         <Script
           id="google-tags"
@@ -70,15 +122,11 @@ export default function RootLayout({
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
               
-              // Khai báo cho Google Analytics đo lường web
               gtag('config', 'G-11WYGY4N4Z');
-
-              // Khai báo cho Google Ads chạy quảng cáo
               gtag('config', 'AW-18262483267');
             `,
           }}
         />
-        {/* HẾT ĐOẠN MÃ GOOGLE */}
 
         {children}
       </body>

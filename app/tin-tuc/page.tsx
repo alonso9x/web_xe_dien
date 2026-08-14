@@ -1,21 +1,25 @@
+import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
 import { Clock, ArrowRight, MapPin, Phone, ArrowLeft } from "lucide-react";
 import fs from 'fs';
 import path from 'path';
 
-// --- LỆNH TỐI QUAN TRỌNG: Ép Next.js luôn đọc dữ liệu mới nhất, không dùng cache ---
 export const dynamic = 'force-dynamic';
 
-const FacebookIcon = ({ size = 24 }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>
-);
-const MessengerIcon = ({ size = 24 }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.14 2 11.25c0 2.91 1.5 5.5 3.94 7.22.18.13.3.34.3.56v2.45c0 .4.46.62.77.38l2.84-2.19c.2-.15.44-.21.68-.18 1.13.16 2.29.25 3.47.25 5.523 0 10-4.14 10-9.25S17.523 2 12 2zm1.09 12.35l-2.48-2.65c-.2-.22-.55-.26-.8-.09l-3.23 2.17c-.36.24-.8-.2-.55-.57l3.66-5.59c.2-.3.57-.38.88-.19l2.48 1.55c.2.13.45.1.62-.07l3.52-3.35c.34-.32.84.14.58.53l-3.8 5.76c-.2.31-.57.4-.88.2z"/></svg>
-);
-const TiktokIcon = ({ size = 24 }) => (
-  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path><path d="M15 8v8a4 4 0 0 1-4 4"></path><path d="M15 4v4a4 4 0 0 0 4 4"></path></svg>
-);
+// --- BỔ SUNG SEO TĨNH CHO TRANG DANH SÁCH ---
+export const metadata: Metadata = {
+  title: "Tin Tức & Sự Kiện Xe Điện | Xe Điện Minh Anh Long Biên",
+  description: "Cập nhật tin tức mới nhất về thị trường xe điện, các mẹo sử dụng xe bền bỉ và chương trình khuyến mãi hấp dẫn từ Hệ thống Xe điện Long Biên - Minh Anh.",
+  alternates: {
+    canonical: "https://xedienminhanh.vn/tin-tuc",
+  },
+  openGraph: {
+    title: "Tin Tức & Sự Kiện Xe Điện | Xe Điện Minh Anh Long Biên",
+    description: "Cập nhật tin tức mới nhất, mẹo hay và khuyến mãi xe điện.",
+    url: "https://xedienminhanh.vn/tin-tuc",
+  }
+};
 
 const elegantFont = Plus_Jakarta_Sans({ 
   subsets: ["latin", "vietnamese"], 
@@ -26,7 +30,6 @@ const elegantFont = Plus_Jakarta_Sans({
 // Hàm đọc và chuẩn hóa dữ liệu tinh vi
 async function getNewsData() {
   try {
-    // Chốt chặn đường dẫn: Ép tìm đúng thư mục nếu Next.js nhận nhầm root ngoài /var/www
     let filePath = path.join(process.cwd(), 'public', 'newsData.json');
     if (!fs.existsSync(filePath)) {
       filePath = '/var/www/shop-xe-dien/public/newsData.json';
@@ -37,14 +40,10 @@ async function getNewsData() {
     const fileContents = fs.readFileSync(filePath, 'utf8');
     const data = JSON.parse(fileContents);
     
-    // Nắn dữ liệu thành mảng (Dù Bot xuất ra 1 Object hay nhiều Object)
     const rawItems = Array.isArray(data) ? data : [data];
     
-    // Ép các trường lệch pha (imageUrl, createdAt) về cấu trúc giao diện cần tìm
     return rawItems.map((item: any, index: number) => {
       let finalImage = item.imageUrl || item.image || "/images/default-news.jpg";
-      
-      // SỬA LỖI ĐƯỜNG DẪN: Nếu thiếu gạch chéo ở đầu, tự động chèn vào để tránh lỗi URL tương đối
       if (finalImage && !finalImage.startsWith('http') && !finalImage.startsWith('/')) {
         finalImage = '/' + finalImage;
       }
@@ -67,8 +66,20 @@ async function getNewsData() {
 export default async function NewsPage() {
   const newsList = await getNewsData();
 
+  // SCHEMA CHUẨN GOOGLE CHO TRANG DANH SÁCH BÀI VIẾT
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": "Tin Tức Xe Điện Minh Anh",
+    "url": "https://xedienminhanh.vn/tin-tuc",
+    "description": "Cập nhật tin tức mới nhất về thị trường xe điện, các mẹo sử dụng xe bền bỉ."
+  };
+
   return (
     <main className={`min-h-screen bg-[#F4F4F6] text-neutral-800 ${elegantFont.className} overflow-x-hidden font-light`}>
+      {/* Gắn Schema vào DOM */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+
       {/* 1. HEADER */}
       <header className="fixed w-full top-0 bg-white/80 backdrop-blur-2xl z-50 border-b border-white shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">

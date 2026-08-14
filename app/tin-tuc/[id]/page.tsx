@@ -1,3 +1,4 @@
+import type { Metadata, ResolvingMetadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
 import { Clock, ArrowLeft, ArrowRight, Calendar } from "lucide-react";
@@ -16,7 +17,6 @@ const elegantFont = Plus_Jakarta_Sans({
 // Hàm đọc file cứng, dập tắt mọi lỗi đường dẫn
 async function getArticleById(id: string) {
   try {
-    // Khóa cứng đường dẫn tuyệt đối của VPS
     const filePath = '/var/www/shop-xe-dien/public/newsData.json';
     if (!fs.existsSync(filePath)) return null;
     
@@ -24,7 +24,6 @@ async function getArticleById(id: string) {
     const data = JSON.parse(fileContents);
     const newsList = Array.isArray(data) ? data : [data];
 
-    // Decode URL (đề phòng trình duyệt mã hóa dấu gạch ngang)
     const decodedId = decodeURIComponent(id);
     
     return newsList.find((news: any) => {
@@ -37,8 +36,51 @@ async function getArticleById(id: string) {
   }
 }
 
+// --- SEO ĐỘNG: TỰ ĐỘNG LẤY TÊN VÀ ẢNH BÀI VIẾT LÀM METADATA ---
+export async function generateMetadata(
+  { params }: { params: any },
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const resolvedParams = await Promise.resolve(params);
+  const article = await getArticleById(resolvedParams.id);
+
+  if (!article) {
+    return {
+      title: "Không tìm thấy bài viết | Xe Điện Minh Anh",
+    };
+  }
+
+  const url = `https://xedienminhanh.vn/tin-tuc/${resolvedParams.id}`;
+  let imgUrl = article.imageUrl || article.image || "/images/default-news.jpg";
+  if (imgUrl && !imgUrl.startsWith('http') && !imgUrl.startsWith('/')) {
+    imgUrl = '/' + imgUrl;
+  }
+  // Tạo link tuyệt đối cho Facebook/Zalo
+  const fullImgUrl = imgUrl.startsWith('http') ? imgUrl : `https://xedienminhanh.vn${imgUrl}`;
+
+  return {
+    title: `${article.title} | Xe Điện Minh Anh`,
+    description: article.excerpt || "Đọc bài viết chi tiết tại website Xe Điện Minh Anh - Long Biên.",
+    alternates: {
+      canonical: url,
+    },
+    openGraph: {
+      title: article.title,
+      description: article.excerpt,
+      url: url,
+      images: [{ url: fullImgUrl }],
+      type: "article",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: article.title,
+      description: article.excerpt,
+      images: [fullImgUrl],
+    }
+  };
+}
+
 export default async function NewsDetail({ params }: { params: any }) {
-  // BẮT BUỘC TRỊ LỖI NEXT.JS 15: Ép params giải nén trước khi dùng
   const resolvedParams = await Promise.resolve(params);
   const articleId = resolvedParams.id;
   
@@ -48,7 +90,6 @@ export default async function NewsDetail({ params }: { params: any }) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-[#F4F4F6] px-6 text-center">
         <h1 className="text-3xl font-bold mb-2 text-black">Không tìm thấy bài viết!</h1>
-        {/* Dòng này cực quan trọng: In ra cái ID để anh em mình bắt bệnh nếu nó vẫn lỳ */}
         <p className="text-red-500 mb-8 font-mono text-sm bg-red-50 px-4 py-2 rounded">Log kiểm tra ID: {articleId}</p>
         <Link href="/tin-tuc" className="bg-black text-white px-6 py-3 rounded-full hover:scale-105 transition-transform flex items-center gap-2">
           <ArrowLeft size={16}/> Quay lại danh sách
@@ -71,15 +112,34 @@ export default async function NewsDetail({ params }: { params: any }) {
   };
 
   let imgUrl = article.imageUrl || article.image || "/images/default-news.jpg";
-  // SỬA LỖI ĐƯỜNG DẪN TƯƠNG TỰ BÊN TRANG LIST
   if (imgUrl && !imgUrl.startsWith('http') && !imgUrl.startsWith('/')) {
     imgUrl = '/' + imgUrl;
   }
 
   const dateStr = article.createdAt ? new Date(article.createdAt).toLocaleDateString('vi-VN') : (article.date || "Vừa cập nhật");
 
+  // SCHEMA BÀI VIẾT (NewsArticle) - GIÚP LÊN GOOGLE DISCOVER
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    "headline": article.title,
+    "image": [
+      imgUrl.startsWith('http') ? imgUrl : `https://xedienminhanh.vn${imgUrl}`
+    ],
+    "datePublished": article.createdAt || new Date().toISOString(),
+    "description": article.excerpt,
+    "author": [{
+        "@type": "Organization",
+        "name": "Xe Điện Minh Anh",
+        "url": "https://xedienminhanh.vn"
+      }]
+  };
+
   return (
     <main className={`min-h-screen bg-white text-neutral-800 ${elegantFont.className} font-light`}>
+      {/* Gắn Schema vào DOM */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+
       <header className="w-full bg-white/80 backdrop-blur-2xl z-50 border-b border-neutral-100">
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center">
           <Link href="/tin-tuc" className="inline-flex items-center gap-2 text-xs font-semibold tracking-[0.2em] uppercase text-neutral-400 hover:text-black transition-colors">
@@ -89,7 +149,6 @@ export default async function NewsDetail({ params }: { params: any }) {
       </header>
 
       <div className="w-full h-[40vh] md:h-[60vh] relative bg-neutral-100">
-        {/* ĐÃ THAY THẾ BẰNG FALLBACKIMAGE Ở ĐÂY */}
         <FallbackImage 
           src={imgUrl} 
           alt={article.title} 
