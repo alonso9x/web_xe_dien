@@ -29,7 +29,7 @@ export default function DinaLayout({
       "@type": "Offer",
       "url": "https://xedienminhanh.vn/dina",
       "priceCurrency": "VND",
-      "price": "14490000",
+      "price": "14990000",
       "priceValidUntil": "2026-12-31",
       "itemCondition": "https://schema.org/NewCondition",
       "availability": "https://schema.org/InStock",

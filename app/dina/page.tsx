@@ -42,7 +42,7 @@ const elegantFont = Plus_Jakarta_Sans({
 const dinaData = {
   name: "Dina",
   tagline: "Thông minh & Thanh lịch",
-  price: "14.490.000 VNĐ",
+  price: "14.990.000 VNĐ",
   signatureHex: "#F472B6",
   description: "Powelldd Dina gây ấn tượng mạnh mẽ với hệ điều hành thông minh iMA AI và khả năng kết nối App Powelldd Go hiện đại. Sở hữu vóc dáng thon gọn nhưng đầy nội lực với khối động cơ 800W, kết hợp cùng hàng loạt công nghệ an toàn ưu việt như TCS chống trượt, hỗ trợ lên xuống dốc. Dina chính là mảnh ghép hoàn hảo cho những tâm hồn tự do và đầy cá tính.",
   colors: [
@@ -56,7 +56,7 @@ const dinaData = {
     { icon: <Zap size={20} strokeWidth={1.5}/>, label: "Động cơ", value: "800W (Cực đại 1592W)" },
     { icon: <BatteryCharging size={20} strokeWidth={1.5}/>, label: "Pin/Ắc quy", value: "60V-22Ah" },
     { icon: <Ruler size={20} strokeWidth={1.5}/>, label: "Quãng đường", value: "80 km / 1 lần sạc" },
-    { icon: <Gauge size={20} strokeWidth={1.5}/>, label: "Vận tốc tối đa", value: "40 km/h" },
+    { icon: <Gauge size={20} strokeWidth={1.5}/>, label: "Vận tốc tối đa", value: "50 km/h" },
     { icon: <Weight size={20} strokeWidth={1.5}/>, label: "Trọng lượng", value: "51.65 kg (Nhẹ nhàng)" },
     { icon: <ShieldCheck size={20} strokeWidth={1.5}/>, label: "An toàn", value: "TCS chống trượt & Phanh đĩa" }
   ]
