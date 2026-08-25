@@ -54,7 +54,7 @@ const wespanData = {
   specs: [
     { icon: <Zap size={20} strokeWidth={1.5}/>, label: "Động cơ", value: "800W - Vận hành êm ái" },
     { icon: <BatteryCharging size={20} strokeWidth={1.5}/>, label: "Pin/Ắc quy", value: "60V-22.3Ah Graphene" },
-    { icon: <Ruler size={20} strokeWidth={1.5}/>, label: "Quãng đường", value: "70 km / 1 lần sạc" },
+    { icon: <Ruler size={20} strokeWidth={1.5}/>, label: "Quãng đường", value: "80 km / 1 lần sạc" },
     { icon: <Gauge size={20} strokeWidth={1.5}/>, label: "Vận tốc tối đa", value: "47 km/h" },
     { icon: <Weight size={20} strokeWidth={1.5}/>, label: "Tải trọng", value: "Lên đến 180 kg" },
     { icon: <ShieldCheck size={20} strokeWidth={1.5}/>, label: "Kháng nước", value: "Chuẩn IP67 an toàn tuyệt đối" }
