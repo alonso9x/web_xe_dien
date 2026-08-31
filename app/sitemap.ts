@@ -2,7 +2,8 @@ import type { MetadataRoute } from "next";
 import fs from "fs";
 import path from "path";
 
-export const revalidate = 86400;
+// VÁ LỖI CACHE: Ép Next.js render lại sitemap mỗi khi có request, không lưu cache đóng băng.
+export const dynamic = 'force-dynamic';
 
 const baseUrl = "https://xedienminhanh.vn";
 
