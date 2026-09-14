@@ -17,6 +17,47 @@ function getRandomCTA(): string {
   return ctaTemplates[Math.floor(Math.random() * ctaTemplates.length)];
 }
 
+// ========================================================
+// [HÀM ĐỘ THÊM] TỰ ĐỘNG GẮN LINK NỘI BỘ & LIÊN HỆ
+// ========================================================
+function autoInsertLinks(content: string): string {
+  let modifiedContent = content;
+
+  // 1. GẮN LINK TỪ KHÓA SEO SẢN PHẨM & TRANG CHỦ
+  const seoKeywords = [
+    { keyword: "xe máy điện", url: "https://xedienminhanh.vn" },
+    { keyword: "xe điện", url: "https://xedienminhanh.vn" },
+    { keyword: "xe điện Long Biên", url: "https://xedienminhanh.vn" },
+    // Dựa theo cây thư mục app/ của ông để link chéo đúng chuẩn:
+    { keyword: "Dimoon", url: "https://xedienminhanh.vn/dimoon" },
+    { keyword: "Dina", url: "https://xedienminhanh.vn/dina" },
+    { keyword: "Eiko", url: "https://xedienminhanh.vn/eiko" },
+    { keyword: "Fancy", url: "https://xedienminhanh.vn/fancy" },
+    { keyword: "Hazel", url: "https://xedienminhanh.vn/hazel" },
+    { keyword: "Shine", url: "https://xedienminhanh.vn/shine" },
+    { keyword: "Sweetea", url: "https://xedienminhanh.vn/sweetea" },
+    { keyword: "Walkmen", url: "https://xedienminhanh.vn/walkmen" },
+    { keyword: "Wespan Pro", url: "https://xedienminhanh.vn/wespan-pro" },
+  ];
+
+  seoKeywords.forEach(item => {
+    // Regex siêu chuẩn: Tìm từ khóa nhưng BỎ QUA nếu từ khóa đó đã nằm trong 1 cái link [text](url) khác.
+    // Dùng cờ 'i' (không phân biệt hoa thường). KHÔNG dùng cờ 'g' để CHỈ CHÈN 1 LẦN DUY NHẤT mỗi từ khóa -> Tránh bị Google phạt tội Spam link (Keyword Stuffing).
+    const regex = new RegExp(`(?<!\\[[^\\]]*?)\\b(${item.keyword})\\b(?![^\\[]*?\\])`, 'i');
+    modifiedContent = modifiedContent.replace(regex, `[$1](${item.url})`);
+  });
+
+  // 2. GẮN LINK SĐT & ZALO (Cái này thì cứ gặp ở đâu là chèn link ở đó)
+  
+  // Bắt các định dạng sđt: 091.774.7777 hoặc 0917747777 hoặc 091 774 7777
+  modifiedContent = modifiedContent.replace(/(?<!\\[[^\\]]*?)\b(091\.?774\.?7777|091 774 7777)\b(?![^\\[]*?\\])/g, '[091.774.7777](tel:0917747777)');
+  
+  // Bắt chữ Zalo
+  modifiedContent = modifiedContent.replace(/(?<!\\[[^\\]]*?)\b(zalo)\b(?![^\\[]*?\\])/gi, '[Zalo](https://zalo.me/0917747777)');
+
+  return modifiedContent;
+}
+
 // Hàm tự động đẻ ra ID siêu chuẩn từ tiêu đề
 function generateSlug(text: string) {
   return text.toLowerCase()
@@ -90,7 +131,6 @@ async function run() {
     }
 
     let imageUrl = scrapedData.imageUrl;
-    // Bổ sung thêm check .includes('images/') để an toàn nếu code scraper trả về thiếu dấu '/'
     if (imageUrl && !imageUrl.startsWith('http') && !imageUrl.includes('images/')) {
       try {
         imageUrl = new URL(imageUrl, news.link).href;
@@ -98,14 +138,11 @@ async function run() {
       }
     }
 
-    // --- SỬA CHỖ NÀY: Logic check ảnh mới ---
     const finalScrapedData = { ...scrapedData, imageUrl: imageUrl };
 
-    // Nếu ảnh là file local (đã lưu ở bước scraper), auto Healthy
     if (imageUrl && imageUrl.includes('images/')) {
         healthyQueue.push({ ...news, ...finalScrapedData });
     } else {
-        // Chỉ chạy checkImage với link remote (nếu có)
         const imgStatus = await checkImage(imageUrl);
         if (imgStatus.valid) {
             healthyQueue.push({ ...news, ...finalScrapedData });
@@ -116,23 +153,18 @@ async function run() {
     }
   }
 
-  // ========================================================
-  // VÙNG THAY ĐỔI: TRỘN NGẪU NHIÊN DANH SÁCH BÀI ĐỦ ĐIỀU KIỆN
-  // ========================================================
   let success = false;
   let finalItem: any = null;
   let finalAiResult: any = null;
 
   if (healthyQueue.length > 0) {
     console.log(`\n🎲 Tìm thấy ${healthyQueue.length} bài hàng xịn. Tiến hành trộn ngẫu nhiên để chọn bài...`);
-    // Thuật toán Fisher-Yates để trộn mảng khách quan nhất
     for (let i = healthyQueue.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [healthyQueue[i], healthyQueue[j]] = [healthyQueue[j], healthyQueue[i]];
     }
   }
 
-  // BẮT ĐẦU XỬ LÝ AI VỚI DANH SÁCH ĐÃ ĐƯỢC TRỘN NGẪU NHIÊN
   for (let i = 0; i < healthyQueue.length; i++) {
     const item = healthyQueue[i];
     console.log(`\n🎲 [Lượt chọn ngẫu nhiên] Đang thử bài [${i + 1}/${healthyQueue.length} - Hàng xịn]: ${item.title}`);
@@ -145,7 +177,6 @@ async function run() {
       break;
     }
   }
-  // ========================================================
 
   if (!success && fallbackQueue.length > 0) {
     console.log("\n🚨 Hàng xịn đã tạch hết, đang bốc thăm 1 bài từ hàng dự phòng...");
@@ -166,11 +197,16 @@ async function run() {
         ? finalAiResult.content.join('\n\n') 
         : String(finalAiResult.content);
     
-    // CHÈN CTA NGẪU NHIÊN VÀO CUỐI BÀI
-    const contentString = rawContent + getRandomCTA();
+    // ==========================================
+    // NHÚNG HÀM SEO VÀO ĐÂY (Xử lý content trước khi gắn CTA)
+    // ==========================================
+    const seoOptimizedContent = autoInsertLinks(rawContent);
+
+    // CHÈN CTA NGẪU NHIÊN VÀO CUỐI BÀI (Đã tối ưu SEO)
+    const contentString = seoOptimizedContent + getRandomCTA();
 
     console.log("\n==============================================");
-    console.log("🎉 KẾT QUẢ AI ĐÃ VIẾT XONG.");
+    console.log("🎉 KẾT QUẢ AI ĐÃ VIẾT VÀ TỐI ƯU SEO INTERNAL LINK XONG.");
     console.log("==============================================\n");
     
     const dir = path.join(process.cwd(), 'public');
@@ -196,10 +232,6 @@ async function run() {
     if (isDuplicate) {
       console.log(`❌ BỎ QUA: Bài viết "${finalTitle}" đã có trên web!`);
     } else {
-      
-      // ==========================================
-      // VÙNG SỬA LỖI: LOGIC CHỌN ẢNH CHUẨN XÁC NHẤT
-      // ==========================================
       let finalImage = finalItem.imageUrl;
       
       if (finalItem.link && finalItem.link.includes('dantri.com.vn')) {
@@ -209,13 +241,11 @@ async function run() {
           console.log("⚠️ Không có ảnh hợp lệ, dùng ảnh mặc định!");
           finalImage = "/images/default-news.jpg";
       } else {
-          // ÉP DẤU "/" VÀO ĐẦU NẾU CHƯA CÓ ĐỂ TRÁNH LỖI ĐƯỜNG DẪN TƯƠNG ĐỐI
           if (!finalImage.startsWith('/') && !finalImage.startsWith('http')) {
               finalImage = '/' + finalImage;
           }
           console.log(`✅ Sử dụng ảnh thành công: ${finalImage}`);
       }
-      // ==========================================
 
       const articleData = {
           id: generateSlug(finalTitle), 
