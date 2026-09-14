@@ -160,13 +160,18 @@ export default async function NewsDetail({ params }: { params: any }) {
         <div className="text-neutral-700 leading-loose text-[17px]">
           <ReactMarkdown
             components={{
-              // ÉP CĂN ĐỀU 2 LỀ (text-justify) VÀO TẬN CỔ TẤT CẢ CÁC THẺ
+              // 1. DẬP TẮT LỖI KHỐI CODE: Ép thẻ pre/code bẻ dòng và căn đều 2 bên như văn bản thường!
+              pre: ({node, ...props}) => <div className="mb-6 last:mb-0 text-justify w-full whitespace-pre-wrap font-sans text-neutral-700 break-words" {...props} />,
+              code: ({node, ...props}) => <span className="font-sans" {...props} />,
+              
+              // 2. CÁC THẺ KHÁC VẪN GIỮ NGUYÊN LỆNH CĂN ĐỀU (text-justify)
               p: ({node, ...props}) => <p className="mb-6 last:mb-0 text-justify w-full" {...props} />,
               ul: ({node, ...props}) => <ul className="list-disc pl-6 mb-6 text-justify w-full" {...props} />,
               ol: ({node, ...props}) => <ol className="list-decimal pl-6 mb-6 text-justify w-full" {...props} />,
               blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-neutral-300 pl-4 italic text-neutral-500 mb-6 text-justify w-full" {...props} />,
               h2: ({node, ...props}) => <h2 className="text-2xl font-semibold mt-8 mb-4 text-black text-left w-full" {...props} />,
               h3: ({node, ...props}) => <h3 className="text-xl font-semibold mt-6 mb-3 text-black text-left w-full" {...props} />,
+              hr: ({node, ...props}) => <hr className="my-8 border-neutral-200" {...props} />, // Xử lý thanh ngang của CTA cho đẹp
               a: ({node, ...props}) => (
                 <a 
                   {...props} 
