@@ -5,6 +5,7 @@ import { Clock, ArrowLeft, ArrowRight, Calendar } from "lucide-react";
 import fs from 'fs';
 import path from 'path';
 import FallbackImage from './FallbackImage';
+import ReactMarkdown from 'react-markdown';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,7 +15,6 @@ const elegantFont = Plus_Jakarta_Sans({
   display: "swap"
 });
 
-// Hàm đọc file cứng, dập tắt mọi lỗi đường dẫn
 async function getArticleById(id: string) {
   try {
     const filePath = '/var/www/shop-xe-dien/public/newsData.json';
@@ -36,7 +36,6 @@ async function getArticleById(id: string) {
   }
 }
 
-// --- SEO ĐỘNG: TỰ ĐỘNG LẤY TÊN VÀ ẢNH BÀI VIẾT LÀM METADATA ---
 export async function generateMetadata(
   { params }: { params: any },
   parent: ResolvingMetadata
@@ -55,7 +54,7 @@ export async function generateMetadata(
   if (imgUrl && !imgUrl.startsWith('http') && !imgUrl.startsWith('/')) {
     imgUrl = '/' + imgUrl;
   }
-  // Tạo link tuyệt đối cho Facebook/Zalo
+  
   const fullImgUrl = imgUrl.startsWith('http') ? imgUrl : `https://xedienminhanh.vn${imgUrl}`;
 
   return {
@@ -99,17 +98,6 @@ export default async function NewsDetail({ params }: { params: any }) {
   }
 
   const rawContent = article.content || article.fullContent || "";
-  const paragraphs = rawContent.split('\n\n').filter((p: string) => p.trim() !== '');
-
-  const renderParagraph = (text: string) => {
-    const parts = text.split(/(\*\*.*?\*\*)/g);
-    return parts.map((part: any, i: number) => {
-      if (part.startsWith('**') && part.endsWith('**')) {
-        return <strong key={i} className="font-semibold text-black">{part.slice(2, -2)}</strong>;
-      }
-      return part;
-    });
-  };
 
   let imgUrl = article.imageUrl || article.image || "/images/default-news.jpg";
   if (imgUrl && !imgUrl.startsWith('http') && !imgUrl.startsWith('/')) {
@@ -118,7 +106,6 @@ export default async function NewsDetail({ params }: { params: any }) {
 
   const dateStr = article.createdAt ? new Date(article.createdAt).toLocaleDateString('vi-VN') : (article.date || "Vừa cập nhật");
 
-  // SCHEMA BÀI VIẾT (NewsArticle) - GIÚP LÊN GOOGLE DISCOVER
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "NewsArticle",
@@ -137,7 +124,6 @@ export default async function NewsDetail({ params }: { params: any }) {
 
   return (
     <main className={`min-h-screen bg-white text-neutral-800 ${elegantFont.className} font-light`}>
-      {/* Gắn Schema vào DOM */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
       <header className="w-full bg-white/80 backdrop-blur-2xl z-50 border-b border-neutral-100">
@@ -171,10 +157,23 @@ export default async function NewsDetail({ params }: { params: any }) {
           {article.excerpt}
         </div>
 
-        <div className="space-y-6 text-neutral-700 leading-loose text-[17px] text-justify">
-          {paragraphs.map((p: string, idx: number) => (
-            <p key={idx}>{renderParagraph(p)}</p>
-          ))}
+        <div className="text-neutral-700 leading-loose text-[17px] text-justify">
+          <ReactMarkdown
+            components={{
+              p: ({node, ...props}) => <p className="mb-6 last:mb-0" {...props} />,
+              a: ({node, ...props}) => (
+                <a 
+                  {...props} 
+                  className="text-blue-600 font-semibold hover:text-blue-800 underline transition-colors" 
+                  target={props.href?.startsWith('http') ? "_blank" : "_self"} 
+                  rel="noopener noreferrer"
+                />
+              ),
+              strong: ({node, ...props}) => <strong className="font-semibold text-black" {...props} />
+            }}
+          >
+            {rawContent}
+          </ReactMarkdown>
         </div>
 
         <div className="mt-16 p-8 bg-neutral-50 rounded-3xl text-center border border-neutral-100">
