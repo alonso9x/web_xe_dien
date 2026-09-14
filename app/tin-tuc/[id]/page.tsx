@@ -157,10 +157,16 @@ export default async function NewsDetail({ params }: { params: any }) {
           {article.excerpt}
         </div>
 
-        <div className="text-neutral-700 leading-loose text-[17px] text-justify">
+        <div className="text-neutral-700 leading-loose text-[17px]">
           <ReactMarkdown
             components={{
-              p: ({node, ...props}) => <p className="mb-6 last:mb-0" {...props} />,
+              // ÉP CĂN ĐỀU 2 LỀ (text-justify) VÀO TẬN CỔ TẤT CẢ CÁC THẺ
+              p: ({node, ...props}) => <p className="mb-6 last:mb-0 text-justify w-full" {...props} />,
+              ul: ({node, ...props}) => <ul className="list-disc pl-6 mb-6 text-justify w-full" {...props} />,
+              ol: ({node, ...props}) => <ol className="list-decimal pl-6 mb-6 text-justify w-full" {...props} />,
+              blockquote: ({node, ...props}) => <blockquote className="border-l-4 border-neutral-300 pl-4 italic text-neutral-500 mb-6 text-justify w-full" {...props} />,
+              h2: ({node, ...props}) => <h2 className="text-2xl font-semibold mt-8 mb-4 text-black text-left w-full" {...props} />,
+              h3: ({node, ...props}) => <h3 className="text-xl font-semibold mt-6 mb-3 text-black text-left w-full" {...props} />,
               a: ({node, ...props}) => (
                 <a 
                   {...props} 
