@@ -96,7 +96,12 @@ async function run() {
     "kiến thức sử dụng xe máy điện",
     "mẹo bảo dưỡng xe điện",
     "Bí kíp chọn xe điện",
-    "kinh nghiệm đi xe máy điện"
+    "kinh nghiệm đi xe máy điện",
+    "xe điện",
+    "xe máy điện Vinfast",
+    "xe máy điện Powelldd",
+    "Aimatech",
+    "xe máy điện TMT",
   ];
 
   let newsList: any[] = [];
