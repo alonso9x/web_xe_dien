@@ -281,8 +281,8 @@ export default function WalkmenDetail() {
                   <MapPin className="shrink-0 text-black mt-0.5" size={20} />
                   <div>
                     <p className="font-semibold text-black uppercase tracking-wider text-xs mb-1">Địa chỉ</p>
-                    <a href="https://www.google.com/maps/search/?api=1&query=547+Nguyễn+Văn+Cừ,+Bồ+Đề,+Long+Biên,+Hà+Nội" target="_blank" rel="noreferrer" className="hover:text-blue-600 transition-colors">
-                      Số 547 Nguyễn Văn Cừ, Bồ Đề, Long Biên, Hà Nội
+                    <a href="https://maps.app.goo.gl/gPpXZc4GRJqwfpWw9" target="_blank" rel="noreferrer" className="hover:text-blue-600 transition-colors">
+                      Số 547 Nguyễn Văn Cừ, Bồ Đề, Hà Nội
                     </a>
                   </div>
                 </div>
@@ -331,7 +331,7 @@ export default function WalkmenDetail() {
           <div className="lg:col-span-4">
             <h3 className="text-sm font-semibold mb-8 uppercase tracking-[0.2em] text-neutral-200">Trải nghiệm thực tế</h3>
             <div className="space-y-6 text-neutral-400 font-light text-sm">
-              <a href="https://www.google.com/maps/search/?api=1&query=547+Nguyễn+Văn+Cừ,+Bồ+Đề,+Hà+Nội" target="_blank" rel="noreferrer" className="flex items-start gap-4 hover:text-white transition-colors">
+              <a href="https://maps.app.goo.gl/gPpXZc4GRJqwfpWw9" target="_blank" rel="noreferrer" className="flex items-start gap-4 hover:text-white transition-colors">
                 <MapPin className="shrink-0 text-white" size={18} /> Số 547 Nguyễn Văn Cừ, Bồ Đề, Hà Nội
               </a>
               <p className="flex items-center gap-4 hover:text-white transition-colors"><Phone className="shrink-0 text-white" size={18} /> <a href="tel:0917747777" className="text-xl font-medium tracking-wider">091.774.7777</a></p>

@@ -283,8 +283,8 @@ export default function FancyDetail() {
                   <MapPin className="shrink-0 text-black mt-0.5" size={20} />
                   <div>
                     <p className="font-semibold text-black uppercase tracking-wider text-xs mb-1">Địa chỉ</p>
-                    <a href="https://www.google.com/maps/search/?api=1&query=547+Nguyễn+Văn+Cừ,+Bồ+Đề,+Long+Biên,+Hà+Nội" target="_blank" rel="noreferrer" className="hover:text-blue-600 transition-colors">
-                      Số 547 Nguyễn Văn Cừ, Bồ Đề, Long Biên, Hà Nội
+                    <a href="https://maps.app.goo.gl/gPpXZc4GRJqwfpWw9" target="_blank" rel="noreferrer" className="hover:text-blue-600 transition-colors">
+                      Số 547 Nguyễn Văn Cừ, Bồ Đề, Hà Nội
                     </a>
                   </div>
                 </div>
@@ -306,7 +306,7 @@ export default function FancyDetail() {
             </div>
 
             <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="lg:col-span-7 w-full h-[450px] rounded-[2.5rem] overflow-hidden border-4 border-white shadow-xl shadow-neutral-200/80 relative">
-              <iframe src="https://maps.google.com/maps?q=547%20Nguy%E1%BB%85n%20V%C4%83n%20C%E1%BB%AB,%20B%E1%BB%93%20%C4%90%E1%BB%81,%20Long%20Bi%C3%AAn,%20H%C3%A0%20N%E1%BB%99i&t=&z=16&ie=UTF8&iwloc=&output=embed" width="100%" height="100%" style={{ border: 0 }} allowFullScreen={true} loading="lazy" referrerPolicy="no-referrer-when-downgrade" className="absolute inset-0 w-full h-full object-cover"></iframe>
+              <iframe src="https://maps.google.com/maps?q=21.04961520953711,105.88330543442477&t=&z=16&ie=UTF8&iwloc=&output=embed" width="100%" height="100%" style={{ border: 0 }} allowFullScreen={true} loading="lazy" referrerPolicy="no-referrer-when-downgrade" className="absolute inset-0 w-full h-full object-cover"></iframe>
             </motion.div>
           </div>
         </div>

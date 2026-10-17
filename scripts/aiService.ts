@@ -31,9 +31,7 @@ export async function rewriteArticle(rawContent: string, originalTitle: string):
     Yêu cầu:
     1. Giọng văn: Tích cực, trung lập, không thiên vị, không quảng cáo quá mức, không dùng dấu * trong câu trả lời của bạn.
     2. Bài viết theo phong cách chuẩn seo. có chèn số điện thoại của cửa hàng là: 091.774.7777. có chèn cụm từ "Xe điện Long Biên", "xe điện giá tốt", "xe điện chính hãng", "Dina", "Eiko", "Fancy", "Hazel", "Shine", "Sweetea", "Walkmen", "Wespan Pro" vào bài viết.
-    3. Đưa góc nhìn đánh giá chuyên môn của Xe Điện Minh Anh vào bài viết. Không copy nguyên văn. Dòng cuối cùng lệch lề phải viết "Xe điện Minh Anh - Chất lượng cao tạo niềm tin". 
-    4. BẮT BUỘC TRẢ VỀ ĐÚNG CẤU TRÚC JSON SAU (Không thêm bất kỳ văn bản nào khác ngoài JSON):
-    3. Đưa góc nhìn đánh giá chuyên môn của Xe Điện Minh Anh vào bài viết. Không copy nguyên văn. Dòng cuối cùng lệch lề phải viết "Xe điện Minh Anh - Chất lượng cao tạo niềm tin". 
+    3. Đưa góc nhìn đánh giá chuyên môn của Xe Điện Minh Anh vào bài viết. Không copy nguyên văn. Dòng cuối cùng căn giữa viết "Xe điện Minh Anh - Chất lượng cao tạo niềm tin". 
     4. BẮT BUỘC TRẢ VỀ ĐÚNG CẤU TRÚC JSON SAU (Không thêm bất kỳ văn bản nào khác ngoài JSON):
     {
       "newTitle": "Tiêu đề mới giật tít",

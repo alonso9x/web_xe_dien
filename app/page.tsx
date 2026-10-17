@@ -168,7 +168,7 @@ export default function Home() {
             ĐỊNH HÌNH <br /> <span className="text-transparent bg-clip-text bg-gradient-to-r from-neutral-800 to-neutral-400 italic font-light pr-2">PHONG CÁCH SỐNG</span>
           </motion.h2>
           <motion.p variants={fadeUp} className="text-lg md:text-xl font-medium mb-8 text-neutral-600 tracking-wide max-w-2xl mx-auto leading-relaxed">
-            Hệ thống xe điện Minh Anh - xe điện Long Biên chuyên phân phối các dòng xe máy điện Powelldd, TMT, Vinfast....chính hãng hàng đầu Việt Nam.
+            Hệ thống xe điện Minh Anh - xe điện Long Biên chuyên phân phối các dòng xe máy điện Powelldd, TMT,....chính hãng hàng đầu Việt Nam.
           </motion.p>
           <motion.a variants={fadeUp} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} href="#san-pham" className="inline-flex items-center gap-3 bg-black text-white px-12 py-5 rounded-full font-semibold text-sm uppercase tracking-widest shadow-xl shadow-black/20">
             Khám phá ngay <ArrowRight size={18} />
@@ -386,7 +386,7 @@ export default function Home() {
               <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
                 <span className="text-xs font-semibold tracking-[0.3em] uppercase text-neutral-400 block mb-3">Ghé thăm chúng tôi</span>
                 <h3 className="text-3xl md:text-4xl font-semibold uppercase tracking-widest text-black mb-6">SHOWROOM <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-black via-neutral-600 to-neutral-400 font-light italic">MINH ANH</span></h3>
-                <p className="text-neutral-500 font-light leading-relaxed mb-8">Không gian trưng bày hiện đại tại xe điện Minh Anh - xe điện Long Biên, đầy đủ các phiên bản và màu sắc mới nhất của Powelldd, TMT, Vinfast.... Kính mời quý khách đến trải nghiệm thực tế và lái thử xe trực tiếp.</p>
+                <p className="text-neutral-500 font-light leading-relaxed mb-8">Không gian trưng bày hiện đại tại xe điện Minh Anh - xe điện Long Biên, đầy đủ các phiên bản và màu sắc mới nhất của Powelldd, TMT.... Kính mời quý khách đến trải nghiệm thực tế và lái thử xe trực tiếp.</p>
               </motion.div>
 
               <div className="space-y-6 text-neutral-700 font-light text-sm">
@@ -394,8 +394,8 @@ export default function Home() {
                   <MapPin className="shrink-0 text-black mt-0.5" size={20} />
                   <div>
                     <p className="font-semibold text-black uppercase tracking-wider text-xs mb-1">Địa chỉ</p>
-                    <a href="https://www.google.com/maps/search/?api=1&query=547+Nguyễn+Văn+Cừ,+Bồ+Đề,+Long+Biên,+Hà+Nội" target="_blank" rel="noreferrer" className="hover:text-blue-600 transition-colors">
-                      Số 547 Nguyễn Văn Cừ, Bồ Đề, Long Biên (cũ), Hà Nội
+                    <a href="https://www.google.com/maps/search/?api=1&query=547+Nguyễn+Văn+Cừ,+Bồ+Đề,+Hà+Nội" target="_blank" rel="noreferrer" className="hover:text-blue-600 transition-colors">
+                      Số 547 Nguyễn Văn Cừ, Bồ Đề, Hà Nội
                     </a>
                   </div>
                 </div>
@@ -417,7 +417,7 @@ export default function Home() {
             </div>
 
             <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="lg:col-span-7 w-full h-[450px] rounded-[2.5rem] overflow-hidden border-4 border-white shadow-xl shadow-neutral-200/80 relative">
-              <iframe src="https://maps.google.com/maps?q=547%20Nguy%E1%BB%85n%20V%C4%83n%20C%E1%BB%AB,%20B%E1%BB%93%20%C4%90%E1%BB%81,%20Long%20Bi%C3%AAn,%20H%C3%A0%20N%E1%BB%99i&t=&z=16&ie=UTF8&iwloc=&output=embed" width="100%" height="100%" style={{ border: 0 }} allowFullScreen={true} loading="lazy" referrerPolicy="no-referrer-when-downgrade" className="absolute inset-0 w-full h-full object-cover"></iframe>
+              <iframe src="https://maps.google.com/maps?q=21.04961520953711,105.88330543442477&t=&z=16&ie=UTF8&iwloc=&output=embed" width="100%" height="100%" style={{ border: 0 }} allowFullScreen={true} loading="lazy" referrerPolicy="no-referrer-when-downgrade" className="absolute inset-0 w-full h-full object-cover"></iframe>
             </motion.div>
           </div>
         </div>
@@ -428,7 +428,7 @@ export default function Home() {
           <div className="lg:col-span-5">
             <h2 className="text-4xl font-semibold mb-4 uppercase tracking-widest leading-none">Minh Anh</h2>
             <span className="text-sm text-neutral-500 tracking-[0.4em] uppercase block mb-6">Xe điện Long Biên</span>
-            <p className="text-neutral-400 text-sm leading-relaxed font-light max-w-sm mb-8">Nâng tầm phong cách di chuyển đô thị. Hệ thống xe điện Minh Anh - xe điện Long Biên phân phối các dòng xe điện Powelldd, TMT, Vinfast....chính hãng hàng đầu Việt Nam.</p>
+            <p className="text-neutral-400 text-sm leading-relaxed font-light max-w-sm mb-8">Nâng tầm phong cách di chuyển đô thị. Hệ thống xe điện Minh Anh - xe điện Long Biên phân phối các dòng xe điện Powelldd, TMT,....chính hãng hàng đầu Việt Nam.</p>
             <div className="flex gap-4">
               <a href="https://www.facebook.com/profile.php?id=61585209534176" target="_blank" rel="noreferrer" className="bg-neutral-800 p-3 rounded-full hover:bg-blue-600 hover:text-white transition-all shadow-sm">
                 <FacebookIcon size={20} />
