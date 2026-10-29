@@ -30,7 +30,7 @@ export default function WespanProLayout({
       "@type": "Offer",
       "url": "https://xedienminhanh.vn/wespan-pro",
       "priceCurrency": "VND",
-      "price": "20500000",
+      "price": "19990000",
       "priceValidUntil": "2026-12-31",
       "itemCondition": "https://schema.org/NewCondition",
       "availability": "https://schema.org/InStock",

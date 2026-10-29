@@ -42,7 +42,7 @@ const elegantFont = Plus_Jakarta_Sans({
 const wespanData = {
   name: "Wespan Pro",
   tagline: "Thiết kế vượt thời gian",
-  price: "20.500.000 VNĐ",
+  price: "19.990.000 VNĐ",
   signatureHex: "#D97706",
   description: "Mang đậm hơi thở cổ điển Châu Âu, Powelldd Wespan Pro là biểu tượng của sự thanh lịch và sang trọng. Sở hữu đường cong vuốt mềm mại kết hợp cùng công nghệ động cơ mạnh mẽ, Wespan Pro không chỉ là một phương tiện di chuyển, mà còn là một tuyệt tác nghệ thuật tôn lên phong cách sống tinh tế của người sở hữu.",
   colors: [
