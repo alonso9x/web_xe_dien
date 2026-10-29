@@ -282,7 +282,7 @@ export default function DinaDetail() {
                   <div>
                     <p className="font-semibold text-black uppercase tracking-wider text-xs mb-1">Địa chỉ</p>
                     <a href="https://maps.app.goo.gl/gPpXZc4GRJqwfpWw9" target="_blank" rel="noreferrer" className="hover:text-blue-600 transition-colors">
-                      Số 547 Nguyễn Văn Cừ, Bồ Đề, Long Biên, Hà Nội
+                      Số 547 Nguyễn Văn Cừ, Bồ Đề, Hà Nội
                     </a>
                   </div>
                 </div>

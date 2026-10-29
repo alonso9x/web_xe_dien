@@ -29,7 +29,7 @@ const elegantFont = Plus_Jakarta_Sans({
 });
 
 const powellddBikes = [
-  { id: "wespan-pro", name: "Wespan pro", price: "20.500.000 VNĐ", range: "80 km", speed: "47 km/h", colors: ["Đen", "Trắng", "Vàng"], tagline: "Thiết kế vượt thời gian", coverImage: "/images/powelldd/wespan-pro/xam-bac-khi.png", signatureHex: "#D97706", category: "cao-cap" },
+  { id: "wespan-pro", name: "Wespan pro", price: "19.990.000 VNĐ", range: "80 km", speed: "47 km/h", colors: ["Đen", "Trắng", "Vàng"], tagline: "Thiết kế vượt thời gian", coverImage: "/images/powelldd/wespan-pro/xam-bac-khi.png", signatureHex: "#D97706", category: "cao-cap" },
   { id: "dimoon", name: "Dimoon", price: "17.990.000 VNĐ", range: "100 km", speed: "49 km/h", colors: ["Đen vũ trụ", "Trắng", "Xanh titan"], tagline: "Biểu tượng thời thượng mới", coverImage: "/images/powelldd/dimoon/trang-bang-suong.png", signatureHex: "#1E3A8A", category: "cao-cap" },
   { id: "fancy", name: "Fancy", price: "17.990.000 VNĐ", range: "80 km", speed: "45 km/h", colors: ["Đen", "Trắng", "Xám"], tagline: "Phong cách Italia", coverImage: "/images/powelldd/fancy/den.png", signatureHex: "#DC2626", category: "cao-cap" },
   { id: "shine", name: "Shine pro", price: "14.990.000 VNĐ", range: "70 km", speed: "25 km/h", colors: ["Cam đỏ", "Đen", "Hồng"], tagline: "Shine pro - Go to school", coverImage: "/images/powelldd/shine-pro/hong-blush.png", signatureHex: "#0D9488", category: "tieu-chuan" },
